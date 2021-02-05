@@ -10,6 +10,13 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.MongoClientSettings;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -27,4 +34,14 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
+    ConnectionString connString = new ConnectionString(
+            "mongodb+srv://<sleepright>:<password>@<cluster-address>/Cluster0?w=majority"
+    );
+
+    MongoClientSettings settings = MongoClientSettings.builder()
+            .applyConnectionString(connString)
+            .retryWrites(true)
+            .build();
+    MongoClient mongoClient = MongoClients.create(settings);
+    MongoDatabase database = mongoClient.getDatabase("users");
 }
