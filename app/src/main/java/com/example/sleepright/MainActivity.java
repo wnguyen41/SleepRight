@@ -1,7 +1,15 @@
 package com.example.sleepright;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,6 +27,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.MongoClientSettings;
 
 import org.bson.types.ObjectId;
+import org.w3c.dom.Text;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,11 +46,11 @@ import io.realm.mongodb.sync.SyncConfiguration;
 public class MainActivity extends AppCompatActivity {
     Realm uiThreadRealm;
     App app;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -77,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("QUICKSTART", "Failed to log in. Error: " + result.getError());
             }
         });
+
     }
 
     private void addChangeListenerToRealm(Realm realm) {
@@ -113,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void popup(View view) {
+        setContentView(R.layout.add_sleep);
+    }
+
     public class BackgroundQuickStart implements Runnable {
         User user;
         public BackgroundQuickStart(User user) {
@@ -153,8 +168,5 @@ public class MainActivity extends AppCompatActivity {
             backgroundThreadRealm.close();
         }
     }
-
-
-
 
 }
