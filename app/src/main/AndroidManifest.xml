@@ -22,6 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="true">
+
+        </activity>
+        <activity android:name=".ui.profile.ChangeEmailActivity"></activity>
     </application>
 
 </manifest>
