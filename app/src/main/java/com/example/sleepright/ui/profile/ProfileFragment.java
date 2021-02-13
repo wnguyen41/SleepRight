@@ -39,8 +39,12 @@ public class ProfileFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+
+
         return root;
-//        root = inflater.inflate(R.layout.profile_fragment, container, false);
+
+//        root = inflater.inflate(R.layout.fragment_profile, container, false);
 //        return root;
     }
 
@@ -56,6 +60,7 @@ public class ProfileFragment extends Fragment {
 //                textView.setText(s);
 //            }
 //        });
+
     }
 
 }

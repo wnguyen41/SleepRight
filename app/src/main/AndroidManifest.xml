@@ -24,11 +24,9 @@
         </activity>
         <activity
             android:name=".ui.profile.ProfileActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity android:name=".AddSleep"     />
-        <activity android:name=".ui.profile.ChangeEmailActivity"></activity>
+        <activity android:name=".ui.profile.ChangeEmailActivity" />
     </application>
 
 </manifest>

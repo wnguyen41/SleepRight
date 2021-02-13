@@ -10,7 +10,7 @@ public class ProfileViewModel extends ViewModel {
 
     public ProfileViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is placeholder text because I don't know what to put here.");
+        mText.setValue("Profile");
     }
 
     public LiveData<String> getText() {
