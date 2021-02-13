@@ -1,5 +1,6 @@
 package com.example.sleepright;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -125,7 +127,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void popup(View view) {
-        setContentView(R.layout.add_sleep);
+        Intent intent = new Intent (this, AddSleep.class);
+        startActivity(intent);
+    }
+
+    public void closePopup(View view) {
+        this.finish();
     }
 
     public class BackgroundQuickStart implements Runnable {

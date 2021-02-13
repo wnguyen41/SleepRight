@@ -27,6 +27,7 @@
             android:exported="true">
 
         </activity>
+        <activity android:name=".AddSleep"     />
         <activity android:name=".ui.profile.ChangeEmailActivity"></activity>
     </application>
 
