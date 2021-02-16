@@ -75,6 +75,7 @@
         android:layout_width="141dp"
         android:layout_height="46dp"
         android:text="@string/button_log_out"
+        android:onClick="logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

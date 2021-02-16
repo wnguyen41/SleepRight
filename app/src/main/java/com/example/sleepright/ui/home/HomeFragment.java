@@ -18,7 +18,6 @@ import com.example.sleepright.R;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    //Button goToAddSleep;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,14 +31,6 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
-        /*
-        Button goToAddSleep = (Button) root.findViewById(R.id.floatingActionButton);
-        goToAddSleep.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //root = inflater.inflate(R.layout.add_sleep, container, false);
-            }
-        });*/
         return root;
     }
 

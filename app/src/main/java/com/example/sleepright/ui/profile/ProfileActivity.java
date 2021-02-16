@@ -16,6 +16,7 @@ import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
 import com.example.sleepright.SignupActivity;
 import com.example.sleepright.ui.login.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 import io.realm.mongodb.User;
 
@@ -37,7 +38,7 @@ public class ProfileActivity extends AppCompatActivity {
         changeEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // Log.d(LOG_TAG, "email button clicked.");
+                // Log.d(LOG_TAG, "email button clicked.");
                 startActivity(new Intent(ProfileActivity.this, ChangeEmailActivity.class));
             }
         });
@@ -56,12 +57,15 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+/*
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TO-DO
+
             }
         });
+        logOutButton.setEnabled(true);*/
     }
 
     public void ChangeFragment(View v) {
@@ -76,4 +80,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    public void logout(View view) {
+        FirebaseAuth.getInstance().signOut();
+        startActivity( new Intent(ProfileActivity.this, LoginActivity.class));
+    }
 }
