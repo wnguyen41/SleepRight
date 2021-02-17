@@ -83,7 +83,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
 
-        if(password.length() < 6) {
+        if(password.length() < 5) {
             passInput.setError("At least 5 characters");
             passInput.requestFocus();
             return;

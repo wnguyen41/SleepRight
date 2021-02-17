@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        if(pass.length() < 6) {
+        if(pass.length() < 5) {
             password.setError("At least 5 characters");
             password.requestFocus();
             return;
@@ -102,6 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
+                    Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 }else{
                     Toast.makeText(LoginActivity.this, "Login failed.", Toast.LENGTH_LONG).show();
