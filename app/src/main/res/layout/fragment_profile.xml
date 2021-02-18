@@ -49,7 +49,7 @@
         android:layout_marginEnd="6dp"
         android:layout_marginRight="6dp"
         android:text="@string/button_delete_account"
-        app:backgroundTint="@android:color/holo_red_dark"
+        app:backgroundTint="#B64C4C"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -65,6 +65,7 @@
         android:layout_marginEnd="6dp"
         android:layout_marginRight="6dp"
         android:text="@string/button_delete_data"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,15 +73,18 @@
 
     <Button
         android:id="@+id/button_log_out"
-        android:layout_width="141dp"
-        android:layout_height="46dp"
-        android:text="@string/button_log_out"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
         android:onClick="logout"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/button_log_out"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_delete_account"
-        app:layout_constraintVertical_bias="0.38" />
+        app:layout_constraintTop_toBottomOf="@+id/button_delete_account" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_place"
@@ -89,7 +93,7 @@
         android:layout_height="match_parent"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp"></androidx.fragment.app.FragmentContainerView>
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/text_profile"
@@ -97,9 +101,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Profile"
+        android:text="@string/title_profile"
         android:textSize="36sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

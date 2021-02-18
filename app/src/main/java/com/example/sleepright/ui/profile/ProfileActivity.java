@@ -3,8 +3,11 @@ package com.example.sleepright.ui.profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -29,59 +32,14 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_profile);
 
-        final Button changeEmailButton = findViewById(R.id.button_change_email);
-        final Button changePasswordButton = findViewById(R.id.button_change_password);
-        final Button deleteAccountButton = findViewById(R.id.button_delete_account);
-        final Button logOutButton = findViewById(R.id.button_log_out);
-
-        changeEmailButton.setEnabled(true);
-        changeEmailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Log.d(LOG_TAG, "email button clicked.");
-                startActivity(new Intent(ProfileActivity.this, ChangeEmailActivity.class));
-            }
-        });
-
-        changePasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent( ProfileActivity.this, ChangePasswordActivity.class));
-            }
-        });
-
-        deleteAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TO-DO
-            }
-        });
-
-/*
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TO-DO
-
-            }
-        });
-        logOutButton.setEnabled(true);*/
     }
 
-    public void ChangeFragment(View v) {
-        Fragment fragment;
-
-        if(v == findViewById(R.id.button_change_email)) {
-            fragment = new ChangeEmailFragment();
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_place, fragment);
-            ft.commit();
-        }
-    }
 
     public void logout(View view) {
         FirebaseAuth.getInstance().signOut();
         startActivity( new Intent(ProfileActivity.this, LoginActivity.class));
     }
+
+
+
 }
