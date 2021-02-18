@@ -16,10 +16,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.w3c.dom.Text;
 
@@ -29,6 +34,7 @@ public class ProfileFragment extends Fragment {
     private View root;
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
 
     public static ProfileFragment newInstance() {
@@ -68,7 +74,7 @@ public class ProfileFragment extends Fragment {
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent( root.getContext(), ChangePasswordActivity.class));
+                startActivity(new Intent(root.getContext(), ChangePasswordActivity.class));
             }
         });
 
@@ -110,28 +116,45 @@ public class ProfileFragment extends Fragment {
 
     public void createConfirmAccountDeletionDialog() {
         dialogBuilder = new AlertDialog.Builder(this.getContext());
-        final View contactPopupView = getLayoutInflater().inflate(R.layout.fragment_delete_account, null);
+        final View confirmPopupView = getLayoutInflater().inflate(R.layout.fragment_delete_account, null);
 
-        TextView popup_Title = contactPopupView.findViewById(R.id.confirm_account_deletion);
-        TextView popup_Subtext = contactPopupView.findViewById(R.id.account_deletion_info);
-        Button cancel_button = contactPopupView.findViewById(R.id.button_cancel);
-        Button delete_button = contactPopupView.findViewById(R.id.button_delete);
+        TextView popup_Title = confirmPopupView.findViewById(R.id.confirm_account_deletion);
+        TextView popup_Subtext = confirmPopupView.findViewById(R.id.account_deletion_info);
+        Button cancel_button = confirmPopupView.findViewById(R.id.button_cancel);
+        Button delete_button = confirmPopupView.findViewById(R.id.button_delete);
 
-        dialogBuilder.setView(contactPopupView);
+        dialogBuilder.setView(confirmPopupView);
         dialog = dialogBuilder.create();
         dialog.show();
 
-        cancel_button.setOnClickListener( new View.OnClickListener() {
+        cancel_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
             }
         });
 
-        delete_button.setOnClickListener( new View.OnClickListener() {
+        delete_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: delete account
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                user.delete()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    // dialog.dismiss();
+                                    Log.d(LOG_TAG, "User account deleted.");
+                                    Toast toast = Toast.makeText(getContext(), "Account Deleted.", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                                else {
+                                    Log.d(LOG_TAG, "User accountn could not be deleted.");
+                                    Toast toast = Toast.makeText(getContext(), "Account coult not be deleted.", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            }
+                        });
             }
         });
     }
