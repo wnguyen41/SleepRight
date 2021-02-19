@@ -3,6 +3,7 @@ package com.example.sleepright.ui.profile;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,14 +48,14 @@ public class ProfileFragment extends Fragment {
 
         mViewModel =
                 new ViewModelProvider(this).get(ProfileViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_profile, container, false);
-        final TextView textView = root.findViewById(R.id.text_profile);
-        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                //textView.setText(s);
-            }
-        });
+        root = inflater.inflate(R.layout.fragment_profile, container, false);
+//        final TextView textView = root.findViewById(R.id.text_profile);
+//        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+//            @Override
+//            public void onChanged(@Nullable String s) {
+//                //textView.setText(s);
+//            }
+//        });
 
         final Button changeEmailButton = root.findViewById(R.id.button_change_email);
         final Button changePasswordButton = root.findViewById(R.id.button_change_password);
@@ -65,7 +66,6 @@ public class ProfileFragment extends Fragment {
         changeEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Log.d(LOG_TAG, "email button clicked.");
                 Intent intent = new Intent(root.getContext(), ChangeEmailActivity.class);
                 startActivity(intent);
             }
@@ -138,23 +138,28 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                user.delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    // dialog.dismiss();
-                                    Log.d(LOG_TAG, "User account deleted.");
-                                    Toast toast = Toast.makeText(getContext(), "Account Deleted.", Toast.LENGTH_SHORT);
-                                    toast.show();
+                if(user != null) {
+                    user.delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        // dialog.dismiss();
+                                        Log.d(LOG_TAG, "User account deleted.");
+                                        Toast toast = Toast.makeText(getContext(), "Account Deleted.", Toast.LENGTH_SHORT);
+                                        toast.show();
+                                    } else {
+                                        Log.d(LOG_TAG, "User account could not be deleted.");
+                                        Toast toast = Toast.makeText(getContext(), "Account could not be deleted.", Toast.LENGTH_SHORT);
+                                        toast.show();
+                                    }
                                 }
-                                else {
-                                    Log.d(LOG_TAG, "User accountn could not be deleted.");
-                                    Toast toast = Toast.makeText(getContext(), "Account coult not be deleted.", Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
-                            }
-                        });
+                            });
+                }
+                else {
+                    Toast toast = Toast.makeText(getContext(), "User does not exist", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         });
     }

@@ -5,10 +5,10 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.profile.ChangeEmailFragment">
+    tools:context=".ui.profile.ChangeEmailActivity">
 
     <TextView
-        android:id="@+id/change_email"
+        android:id="@+id/text_change_email"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
         android:layout_marginTop="108dp"
@@ -36,7 +36,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/change_email" />
+        app:layout_constraintTop_toBottomOf="@+id/text_change_email"
+        android:importantForAutofill="no" />
 
 
     <EditText
@@ -54,17 +55,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_password_for_email_change" />
+        app:layout_constraintTop_toBottomOf="@+id/et_password_for_email_change"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/button_save_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="120dp"
+        android:checkable="false"
+        android:clickable="true"
         android:text="@string/button_save_email"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_new_email" />
+        app:layout_constraintTop_toBottomOf="@+id/et_new_email"
+        android:focusable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
