@@ -91,8 +91,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        if(pass.length() < 5) {
-            password.setError("At least 5 characters");
+        if(pass.length() < 6) {
+            password.setError("At least 6 characters");
             password.requestFocus();
             return;
         }
