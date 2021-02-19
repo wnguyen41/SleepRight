@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sleepright.ForgotPasswordActivity;
 import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
 import com.example.sleepright.SignupActivity;
@@ -103,4 +104,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    public void gotToForgotPassword(View view) {
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
+    }
 }

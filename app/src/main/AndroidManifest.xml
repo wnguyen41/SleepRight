@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.sleepright">
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SleepRight">
-        <activity android:name=".SignupActivity"></activity>
+        <activity android:name=".ForgotPasswordActivity"></activity>
+        <activity android:name=".SignupActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" />
@@ -25,7 +28,7 @@
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="true" />
-        <activity android:name=".AddSleep"     />
+        <activity android:name=".AddSleep" />
         <activity android:name=".ui.profile.ChangeEmailActivity" />
         <activity android:name=".ui.profile.ChangePasswordActivity" />
     </application>

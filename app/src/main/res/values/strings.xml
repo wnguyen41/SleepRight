@@ -6,7 +6,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="action_sign_up_underlined"><u>Sign Up</u></string>
     <string name="welcome">"Welcome !"</string>
-    <string name="forgot_password">Forgot password?</string>
+    <string name="forgot_password_underlined"><u>Forgot password?</u></string>
     <string name="no_account">Don\'t have an account?</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -20,6 +20,7 @@
     <!-- Strings related to login -->
     <string name="action_sign_up">Sign Up</string>
     <string name="action_sign_in_underlined"><u>Sign in</u></string>
+    <string name="back_to_sign_in_underlined"><u>Back to sign in</u></string>
     <string name="prompt_verify_password">Verify Password</string>
     <string name="already_have_account">Already have an account?</string>
 
