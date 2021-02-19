@@ -52,8 +52,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="64dp"
-        android:enabled="false"
         android:text="@string/action_sign_in_short"
+        android:onClick="signin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -109,6 +109,7 @@
         android:layout_marginEnd="104dp"
         android:layout_marginRight="104dp"
         android:text="@string/action_sign_up_underlined"
+        android:onClick="goToSignup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dont_have_account" />
