@@ -21,8 +21,6 @@ import com.example.sleepright.SignupActivity;
 import com.example.sleepright.ui.login.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
-import io.realm.mongodb.User;
-
 public class ProfileActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private ProfileViewModel profileViewModel;

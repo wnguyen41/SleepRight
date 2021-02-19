@@ -20,12 +20,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.mongodb.ConnectionString;
-import com.mongodb.client.MongoClient;
-
-import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -90,28 +84,26 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         //loadingProgressBar.setVisibility(View.VISIBLE);
-        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull com.google.android.gms.tasks.Task<AuthResult> task) {
-                if(task.isSuccessful()) {
-                    User user = new User(email, password);
+        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                User user = new User(email, password);
 
-                    FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                Toast.makeText(SignupActivity.this, "User has been registered!", Toast.LENGTH_LONG).show();
-                                startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                            }
-                            else {
-                                Toast.makeText(SignupActivity.this, "Register failed.", Toast.LENGTH_LONG).show();
-                            }
+                FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(SignupActivity.this, "User has been registered!", Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                         }
-                    });
-                }else {
-                    Toast.makeText(SignupActivity.this, "User has been registered!", Toast.LENGTH_LONG).show();
-                }
+                        else {
+                            Toast.makeText(SignupActivity.this, "User Registered, unable to add to database.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }else {
+
+                Toast.makeText(SignupActivity.this, "Register failed." + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

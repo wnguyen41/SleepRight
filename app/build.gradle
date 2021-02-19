@@ -1,6 +1,5 @@
 
 apply plugin: 'com.android.application'
-apply plugin: 'realm-android'
 apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -31,10 +30,6 @@ android {
     }
 }
 
-realm {
-    syncEnabled = true
-}
-
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -48,9 +43,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.2'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'org.mongodb:mongodb-driver-sync:4.2.0'
-    implementation 'org.mongodb:mongodb-driver-sync:4.1.1'
-    implementation 'org.mongodb:mongodb-driver-legacy:4.1.1'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.firebase:firebase-auth:20.0.2'
     implementation 'com.google.firebase:firebase-database:19.6.0'

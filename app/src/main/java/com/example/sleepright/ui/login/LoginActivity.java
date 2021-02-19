@@ -34,7 +34,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-import io.realm.mongodb.sync.Progress;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
