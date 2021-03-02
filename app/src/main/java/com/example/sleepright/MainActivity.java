@@ -2,6 +2,9 @@ package com.example.sleepright;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -43,6 +46,13 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+//        // RecyclerView code starts here
+//        ListFragment fragment = new ListFragment();
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.add(R.id.recyclerView,fragment);
+//        fragmentTransaction.commit();
 
     }
 
