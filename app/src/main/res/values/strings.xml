@@ -59,6 +59,7 @@
     <string name="string_save">Save</string>
     <string name="title_delete_account">Are you sure?</string>
     <string name="string_deletion_info">All of your account data will be permanently deleted. This cannot be undone.</string>
+    <string name="string_deletion_info2">Enter your password to confirm:</string>
     <string name="string_delete_everything">Delete</string>
     <string name="string_cancel">Cancel</string>
 

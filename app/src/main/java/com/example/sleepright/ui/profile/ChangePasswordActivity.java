@@ -18,6 +18,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class ChangePasswordActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -34,7 +35,15 @@ public class ChangePasswordActivity extends AppCompatActivity {
         final EditText currentPasswordET = findViewById(R.id.edittxt_current_password);
         final EditText newPasswordET = findViewById(R.id.edittxt_new_password);
         final EditText confirmNewPasswordET = findViewById(R.id.edittxt_confirm_password);
+        final Button cancelButton = findViewById(R.id.btn_cancel_change_pw);
         final Button savePasswordButton = findViewById(R.id.btn_save_password);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         savePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,15 +52,32 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 String newPassword = newPasswordET.getText().toString();
                 String confirmNewPassword = confirmNewPasswordET.getText().toString();
 
-
-
-                if(newPassword.equals(confirmNewPassword)) {
-                    updatePassword(currentPassword, newPassword);
-//                    toast = Toast.makeText(getApplicationContext(), "Passwords match!", Toast.LENGTH_SHORT);
+                if (currentPassword.isEmpty()) {
+                    currentPasswordET.setError("Incorrect password.");
+                    currentPasswordET.requestFocus();
+                    return;
                 }
-                else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Passwords don't match. Try again.", Toast.LENGTH_SHORT);
-                    toast.show();
+
+                if (newPassword.isEmpty()) {
+                    newPasswordET.setError("Password is required.");
+                    newPasswordET.requestFocus();
+                    return;
+                }
+
+                if (newPassword.length() < 6) {
+                    newPasswordET.setError("At least 6 characters.");
+                    newPasswordET.requestFocus();
+                    return;
+                }
+
+                if (newPassword.equals(confirmNewPassword)) {
+                    updatePassword(currentPasswordET, newPassword);
+//                    toast = Toast.makeText(getApplicationContext(), "Passwords match!", Toast.LENGTH_SHORT);
+                } else {
+//                    Toast toast = Toast.makeText(getApplicationContext(), "Passwords don't match. Try again.", Toast.LENGTH_SHORT);
+//                    toast.show();
+                    confirmNewPasswordET.setError("Passwords do not match.");
+                    confirmNewPasswordET.requestFocus();
                 }
 
 
@@ -59,10 +85,18 @@ public class ChangePasswordActivity extends AppCompatActivity {
         });
     }
 
-    public void updatePassword(String currentPassword, String newPassword) {
+    public void updatePassword(EditText currentPasswordET, String newPassword) {
+        String currentPassword = currentPasswordET.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user.getUid();
 
-        if(user != null && user.getEmail() != null) {
+        if (currentPassword.isEmpty()) {
+            currentPasswordET.setError("Incorrect password.");
+            currentPasswordET.requestFocus();
+            return;
+        }
+
+        if (user != null && user.getEmail() != null) {
             AuthCredential credential = EmailAuthProvider
                     .getCredential(user.getEmail(), currentPassword);
 
@@ -76,23 +110,28 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
+                                                    FirebaseDatabase.getInstance().getReference("Users").child(uid).child("password").setValue(newPassword);
                                                     Log.d(LOG_TAG, "User password updated.");
                                                     Toast toast = Toast.makeText(getApplicationContext(), "Password Updated!", Toast.LENGTH_SHORT);
                                                     toast.show();
+                                                    onBackPressed();
                                                 } else {
-                                                    Log.d(LOG_TAG, "Error password not updated.");
+                                                    Log.d(LOG_TAG, "Error, password not updated.");
+                                                    Toast toast = Toast.makeText(getApplicationContext(), "Password could not be updated.", Toast.LENGTH_SHORT);
+                                                    toast.show();
                                                 }
                                             }
                                         });
                             } else {
                                 Log.d(LOG_TAG, "Authentication Failed.");
-                                Toast toast = Toast.makeText(getApplicationContext(), "Authentication Failed.", Toast.LENGTH_SHORT);
-                                toast.show();
+//                                Toast toast = Toast.makeText(getApplicationContext(), "Authentication Failed.", Toast.LENGTH_SHORT);
+//                                toast.show();
+                                currentPasswordET.setError("Incorrect password.");
+                                currentPasswordET.requestFocus();
                             }
                         }
                     });
-        }
-        else {
+        } else {
             Toast toast = Toast.makeText(getApplicationContext(), "User does not exist.", Toast.LENGTH_SHORT);
             toast.show();
         }
