@@ -77,14 +77,17 @@ public class AddSleep extends AppCompatActivity {
             SleepSession newSleepSession = new SleepSession(uid,startTimeCalender,endTimeCalender,rating);
 
             // add new SleepSession to the database
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-            db.child("SleepSessions").setValue(newSleepSession);
+            //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            //db.child("SleepSessions").setValue(newSleepSession);
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference("SleepSessions");
+            DatabaseReference newSession = db.push();
+            newSession.setValue(newSleepSession);
 
 
-            Toast.makeText(AddSleep.this, "Sumbit successful.", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddSleep.this, "Submit successful.", Toast.LENGTH_LONG).show();
         }
         else{
-            Toast.makeText(AddSleep.this, "Sumbit unsuccessful.", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddSleep.this, "Submit unsuccessful.", Toast.LENGTH_LONG).show();
         }
 //        FirebaseDatabase database = FirebaseDatabase.getInstance();
 //        DatabaseReference myRef = database.getReference("message");
