@@ -67,16 +67,17 @@ public class DeleteAccountActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         FirebaseDatabase.getInstance().getReference("Users").child(uid).removeValue();
+
                                         user.delete()
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
-//                                                            dialog.dismiss();
                                                             Log.d(LOG_TAG, "User account deleted: " + uid);
                                                             Toast toast = Toast.makeText(getApplicationContext(), "Account Deleted.", Toast.LENGTH_SHORT);
                                                             toast.show();
                                                             onBackPressed();
+
                                                             startActivity(new Intent(DeleteAccountActivity.this, LoginActivity.class));
                                                         } else {
                                                             Log.d(LOG_TAG, "User account could not be deleted.");

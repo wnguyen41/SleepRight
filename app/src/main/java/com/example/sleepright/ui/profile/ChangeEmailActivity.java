@@ -46,7 +46,6 @@ public class ChangeEmailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                Log.d(LOG_TAG, "save email button clicked");
-
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = user.getUid();
 
@@ -58,6 +57,8 @@ public class ChangeEmailActivity extends AppCompatActivity {
 
                 if (newEmailET.getText().toString().isEmpty()) {
                     newEmailET.setError("Invalid email.");
+                    newEmailET.requestFocus();
+                    return;
                 }
 
                 if (user != null && user.getEmail() != null) {
@@ -70,11 +71,13 @@ public class ChangeEmailActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         String newEmail = newEmailET.getText().toString();
+
                                         user.updateEmail(newEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     FirebaseDatabase.getInstance().getReference("Users").child(uid).child("username").setValue(newEmail);
+
                                                     Toast toast = Toast.makeText(getApplicationContext(), "User email address updated.", Toast.LENGTH_SHORT);
                                                     toast.show();
                                                     onBackPressed();
@@ -96,6 +99,7 @@ public class ChangeEmailActivity extends AppCompatActivity {
                                 }
                             });
                 } else if (user == null) {
+                    Log.d(LOG_TAG, "User does not exist; Change Email Failed.");
                     Toast toast2 = Toast.makeText(getApplicationContext(), "User does not exist.", Toast.LENGTH_SHORT);
                     toast2.show();
                 }

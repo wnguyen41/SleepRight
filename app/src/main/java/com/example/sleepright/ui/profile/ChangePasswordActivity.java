@@ -80,7 +80,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     confirmNewPasswordET.requestFocus();
                 }
 
-
             }
         });
     }
@@ -111,6 +110,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     FirebaseDatabase.getInstance().getReference("Users").child(uid).child("password").setValue(newPassword);
+
                                                     Log.d(LOG_TAG, "User password updated.");
                                                     Toast toast = Toast.makeText(getApplicationContext(), "Password Updated!", Toast.LENGTH_SHORT);
                                                     toast.show();
