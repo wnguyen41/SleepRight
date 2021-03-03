@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
+import com.example.sleepright.ui.login.LoginActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -21,18 +23,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class ChangeEmailActivity extends AppCompatActivity {
+public class DeleteAccountActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_change_email);
+        setContentView(R.layout.fragment_delete_account);
 
-        final EditText newEmailET = findViewById(R.id.et_new_email);
-        final EditText passwordET = findViewById(R.id.et_password_for_email_change);
-        final Button cancelButton = findViewById(R.id.btn_cancel_change_email);
-        final Button saveEmailButton = findViewById(R.id.button_save_email);
+        final TextView title = findViewById(R.id.confirm_account_deletion);
+        final TextView info1 = findViewById(R.id.account_deletion_info);
+        final TextView info2 = findViewById(R.id.account_deletion_info2);
+        final Button cancelButton = findViewById(R.id.button_cancel_deletion);
+        final Button deleteButton = findViewById(R.id.button_delete);
+        final EditText passwordET = findViewById(R.id.et_delete_account_password);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,23 +45,15 @@ public class ChangeEmailActivity extends AppCompatActivity {
             }
         });
 
-        saveEmailButton.setEnabled(true);
-        saveEmailButton.setOnClickListener(new View.OnClickListener() {
+        deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.d(LOG_TAG, "save email button clicked");
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = user.getUid();
 
                 if (passwordET.getText().toString().isEmpty()) {
                     passwordET.setError("Incorrect password.");
                     passwordET.requestFocus();
-                    return;
-                }
-
-                if (newEmailET.getText().toString().isEmpty()) {
-                    newEmailET.setError("Invalid email.");
-                    newEmailET.requestFocus();
                     return;
                 }
 
@@ -70,26 +66,26 @@ public class ChangeEmailActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        String newEmail = newEmailET.getText().toString();
+                                        FirebaseDatabase.getInstance().getReference("Users").child(uid).removeValue();
 
-                                        user.updateEmail(newEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    FirebaseDatabase.getInstance().getReference("Users").child(uid).child("username").setValue(newEmail);
+                                        user.delete()
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            Log.d(LOG_TAG, "User account deleted: " + uid);
+                                                            Toast toast = Toast.makeText(getApplicationContext(), "Account Deleted.", Toast.LENGTH_SHORT);
+                                                            toast.show();
+                                                            onBackPressed();
 
-                                                    Toast toast = Toast.makeText(getApplicationContext(), "User email address updated.", Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                    onBackPressed();
-                                                } else {
-//                                                    Toast toast = Toast.makeText(getApplicationContext(), "User email address not updated.", Toast.LENGTH_SHORT);
-//                                                    toast.show();
-                                                    newEmailET.setError("Invalid email.");
-                                                    newEmailET.requestFocus();
-                                                }
-                                            }
-                                        });
-
+                                                            startActivity(new Intent(DeleteAccountActivity.this, LoginActivity.class));
+                                                        } else {
+                                                            Log.d(LOG_TAG, "User account could not be deleted.");
+                                                            Toast toast = Toast.makeText(getApplicationContext(), "Account could not be deleted.", Toast.LENGTH_SHORT);
+                                                            toast.show();
+                                                        }
+                                                    }
+                                                });
                                     } else {
 //                                        Toast toast = Toast.makeText(getApplicationContext(), "Authentication Failed.", Toast.LENGTH_SHORT);
 //                                        toast.show();
@@ -99,13 +95,11 @@ public class ChangeEmailActivity extends AppCompatActivity {
                                 }
                             });
                 } else if (user == null) {
-                    Log.d(LOG_TAG, "User does not exist; Change Email Failed.");
-                    Toast toast2 = Toast.makeText(getApplicationContext(), "User does not exist.", Toast.LENGTH_SHORT);
-                    toast2.show();
+                    Toast toast = Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             }
         });
     }
 
 }
-

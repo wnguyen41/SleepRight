@@ -31,13 +31,4 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.fragment_profile);
 
     }
-
-
-    public void logout(View view) {
-        FirebaseAuth.getInstance().signOut();
-        startActivity( new Intent(ProfileActivity.this, LoginActivity.class));
-    }
-
-
-
 }

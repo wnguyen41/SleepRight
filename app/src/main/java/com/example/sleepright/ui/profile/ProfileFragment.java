@@ -17,15 +17,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
+import com.example.sleepright.ui.login.LoginActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
 
@@ -60,7 +66,7 @@ public class ProfileFragment extends Fragment {
         final Button changeEmailButton = root.findViewById(R.id.button_change_email);
         final Button changePasswordButton = root.findViewById(R.id.button_change_password);
         final Button deleteAccountButton = root.findViewById(R.id.button_delete_account);
-//        final Button logOutButton = root.findViewById(R.id.button_log_out);
+        final Button logOutButton = root.findViewById(R.id.button_log_out);
 
 
         changeEmailButton.setOnClickListener(new View.OnClickListener() {
@@ -81,16 +87,19 @@ public class ProfileFragment extends Fragment {
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createConfirmAccountDeletionDialog();
+                startActivity(new Intent(root.getContext(), DeleteAccountActivity.class));
             }
         });
 
-//        logOutButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Toast toast = Toast.makeText(getContext(), "Logged out!", Toast.LENGTH_SHORT);
+                toast.show();
+                startActivity(new Intent(root.getContext(), LoginActivity.class));
+            }
+        });
 
         return root;
 
@@ -102,7 +111,6 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        // TODO: Use the ViewModel
 //        final TextView textView = root.findViewById(R.id.text_home);
 //        mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
 //            @Override
@@ -112,56 +120,4 @@ public class ProfileFragment extends Fragment {
 //        });
 
     }
-
-
-    public void createConfirmAccountDeletionDialog() {
-        dialogBuilder = new AlertDialog.Builder(this.getContext());
-        final View confirmPopupView = getLayoutInflater().inflate(R.layout.fragment_delete_account, null);
-
-        TextView popup_Title = confirmPopupView.findViewById(R.id.confirm_account_deletion);
-        TextView popup_Subtext = confirmPopupView.findViewById(R.id.account_deletion_info);
-        Button cancel_button = confirmPopupView.findViewById(R.id.button_cancel);
-        Button delete_button = confirmPopupView.findViewById(R.id.button_delete);
-
-        dialogBuilder.setView(confirmPopupView);
-        dialog = dialogBuilder.create();
-        dialog.show();
-
-        cancel_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        delete_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user != null) {
-                    user.delete()
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        // dialog.dismiss();
-                                        Log.d(LOG_TAG, "User account deleted.");
-                                        Toast toast = Toast.makeText(getContext(), "Account Deleted.", Toast.LENGTH_SHORT);
-                                        toast.show();
-                                    } else {
-                                        Log.d(LOG_TAG, "User account could not be deleted.");
-                                        Toast toast = Toast.makeText(getContext(), "Account could not be deleted.", Toast.LENGTH_SHORT);
-                                        toast.show();
-                                    }
-                                }
-                            });
-                }
-                else {
-                    Toast toast = Toast.makeText(getContext(), "User does not exist", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
-        });
-    }
-
 }
