@@ -74,11 +74,9 @@ public class AddSleep extends AppCompatActivity {
             float rating = ratingBar.getRating();
 
             // create SleepSession object
-            SleepSession newSleepSession = new SleepSession(uid,startTimeCalender,endTimeCalender,rating);
+            SleepSession newSleepSession = new SleepSession(uid,startTimeCalender.getTime(),endTimeCalender.getTime(),rating);
 
             // add new SleepSession to the database
-            //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-            //db.child("SleepSessions").setValue(newSleepSession);
             DatabaseReference db = FirebaseDatabase.getInstance().getReference("SleepSessions");
             DatabaseReference newSession = db.push();
             newSession.setValue(newSleepSession);

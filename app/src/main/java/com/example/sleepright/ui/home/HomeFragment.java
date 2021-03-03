@@ -17,6 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sleepright.ListAdapter;
 import com.example.sleepright.R;
+import com.example.sleepright.SleepSession;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -28,7 +34,15 @@ public class HomeFragment extends Fragment {
 
         RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recyclerView);
 
-        ListAdapter listAdapter = new ListAdapter();
+        Date start = new Date();
+        Date end = new Date();
+        String test = "";
+        float num = (float) 3.5;
+        SleepSession session = new SleepSession(test, start, end, num);
+        ArrayList<SleepSession> sessions = session.querySessions();
+        int size = sessions.size();
+
+        ListAdapter listAdapter = new ListAdapter(sessions);
         recyclerView.setAdapter(listAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
