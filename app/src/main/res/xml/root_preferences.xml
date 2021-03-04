@@ -1,42 +1,40 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="switch_preference_1"
-        android:title="Enable notifications" />
-    <PreferenceCategory app:title="@string/messages_header">
+    <PreferenceCategory app:title="@string/sleep_header">
+        <ListPreference
+            android:defaultValue="8 hours"
+            android:entries="@array/times_array"
+            android:entryValues="@array/times_array"
+            android:key="ideal_sleep_income"
+            android:summary="%s"
+            android:title="Ideal sleep income"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_bedtime_notification"
+            android:title="Bedtime notification"
+            app:iconSpaceReserved="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/integration_header">
+        <CheckBoxPreference
+            app:key="Wearables"
+            app:title="@string/wearables_title"
+            app:iconSpaceReserved="false"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="check_box_preference_1"
-            android:title="Check box preference" />
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
+            app:key="google_fit"
+            app:title="@string/google_fit_title"
+            android:summary="Import your Google Fit data."
+            app:iconSpaceReserved="false"/>
 
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
-    <PreferenceCategory app:title="@string/sync_header">
-
-        <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
-
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+        <CheckBoxPreference
+            android:summary="SleepRight will recommend you the best time to sleep based on your events for the next day and your ideal sleep income!"
+            app:key="google_calendar"
+            app:title="@string/google_calendar_title"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 

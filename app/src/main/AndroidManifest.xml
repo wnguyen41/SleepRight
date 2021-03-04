@@ -33,6 +33,7 @@
         <activity android:name=".ui.profile.ChangeEmailActivity" />
         <activity android:name=".ui.profile.ChangePasswordActivity" />
         <activity android:name=".ui.profile.DeleteAccountActivity" />
+        <activity android:name=".ui.settings.SettingsActivity" />
     </application>
 
 </manifest>
