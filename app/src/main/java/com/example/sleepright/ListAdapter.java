@@ -1,6 +1,7 @@
 package com.example.sleepright;
 
 import android.content.Context;
+import android.content.Intent;
 import android.se.omapi.Session;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,10 +36,10 @@ import java.util.concurrent.TimeUnit;
 import static android.content.ContentValues.TAG;
 
 public class ListAdapter extends RecyclerView.Adapter {
-    private ArrayList<SleepSession> sessions;
+    public ArrayList<SleepSession> sessions;
 
     public ListAdapter(ArrayList<SleepSession> inputSessions){
-        sessions = (ArrayList<SleepSession>)inputSessions.clone();
+        sessions = inputSessions;
     }
 
     @NonNull
@@ -56,8 +57,8 @@ public class ListAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         System.out.println("Sessions count: " + sessions.size());
+        //return sessions.size();
         return sessions.size();
-        //return 1;
     }
 
     @Override
@@ -84,58 +85,6 @@ public class ListAdapter extends RecyclerView.Adapter {
             day_month = (TextView) itemView.findViewById(R.id.textView_day_month);
             hour_min = (TextView) itemView.findViewById(R.id.textView_hour_min);
             rating_bar = (RatingBar) itemView.findViewById(R.id.ratingBar);
-            /*
-            ValueEventListener sessionListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int count = 0;
-                    snapshot.getValue();
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        SleepSession session = snap.getValue(SleepSession.class);
-                        System.out.println("User: " + uid);
-                        if (count < 7 && session.userID.equals(uid)) {
-                            System.out.println("Data: " + session.getUserID());
-                            System.out.println("Session Rating: " + session.sessionRating);
-                            sessions.add(session);
-                            count++;
-                            System.out.println("Size of Sessions List: " + sessions.size());
-                        }
-                        if (count == 7) {break; }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) { }
-            };
-            db.addValueEventListener(sessionListener);
-            test = "changed";
-            */
-            /*
-            FirebaseDatabase.getInstance().getReference().child("SleepSessions").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int count = 0;
-                    snapshot.getValue();
-                    for (DataSnapshot snap : snapshot.getChildren()) {
-                        SleepSession session = snap.getValue(SleepSession.class);
-                        System.out.println("User: " + uid);
-                        if (count < 7 && session.userID.equals(uid)) {
-                            System.out.println("Data: " + session.getUserID());
-                            System.out.println("Session Rating: " + session.sessionRating);
-                            sessions.add(session);
-                            count++;
-                            System.out.println("Size of Sessions List: " + sessions.size());
-                        }
-                        if (count == 7) {break; }
-                    }
-                    test = "changed";
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });*/
             itemView.setOnClickListener(this);
         }
 
@@ -143,10 +92,9 @@ public class ListAdapter extends RecyclerView.Adapter {
             //TODO: set textview and ratingbar to data from our database here
             System.out.println(position + " position");
             if (!sessions.isEmpty()) {
-                SleepSession current = sessions.get(0);
+                SleepSession current = sessions.get(position);
                 Date startDate = current.getStartTime();
                 Date endDate = current.getEndTime();
-                //DateFormat dateFormat = new SimpleDateFormat("MMM dd hh:mm aa");
                 DateFormat day = new SimpleDateFormat("MMM dd");
                 DateFormat time = new SimpleDateFormat("hh:mm aa");
                 float rating = current.getSessionRating();
@@ -159,14 +107,8 @@ public class ListAdapter extends RecyclerView.Adapter {
                 String minutes = time.format(endDate);
 
                 day_month.setText(date);
-                hour_min.setText(timeSlept);
+                hour_min.setText(timeSlept + " h");
                 rating_bar.setRating(rating);
-
-                //day_month.setText("Testing_Day_Month");
-                //hour_min.setText("Testing_Hour_Min");
-                //rating_bar.setRating((float)3.5);
-                sessions.remove(0);
-
             }
         }
 
@@ -174,6 +116,10 @@ public class ListAdapter extends RecyclerView.Adapter {
         @Override
         public void onClick(View v) {
             // TODO: onclick should go to fragment that allows you to edit the rating. Passes data from the itemView to the fragment.
+            Intent intent = new Intent (v.getContext(), ActivityChangeSleep.class);
+            int pos = getAdapterPosition();
+            intent.putExtra("ADAPTER_POSITION", pos);
+            v.getContext().startActivity(intent);
         }
     }
 }

@@ -29,6 +29,7 @@
             android:name=".ui.profile.ProfileActivity"
             android:exported="true" />
         <activity android:name=".AddSleep" />
+        <activity android:name=".ActivityChangeSleep" />
         <activity android:name=".ui.profile.ChangeEmailActivity" />
         <activity android:name=".ui.profile.ChangePasswordActivity" />
         <activity android:name=".ui.profile.DeleteAccountActivity" />
