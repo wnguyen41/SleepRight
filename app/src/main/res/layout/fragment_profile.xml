@@ -4,7 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.profile.ProfileFragment" >
+    tools:context=".ui.profile.ProfileFragment">
+
+    <Button
+        android:id="@+id/button_link_google_fit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
+        android:text="@string/button_google_fit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_change_email"
@@ -12,16 +25,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:layout_marginLeft="6dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="6dp"
         android:layout_marginRight="6dp"
         android:text="@string/button_change_email"
-        app:layout_constraintBottom_toTopOf="@+id/button_change_password"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_link_google_fit" />
 
     <Button
-        android:id="@+id/button_change_password"
+        android:id="@+id/button_log_out"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
@@ -29,12 +42,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="6dp"
         android:layout_marginRight="6dp"
-        android:text="@string/button_change_password"
+        android:text="@string/button_log_out"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_change_email" />
-
+        app:layout_constraintTop_toBottomOf="@+id/button_delete_account" />
 
     <Button
         android:id="@+id/button_delete_account"
@@ -48,40 +59,34 @@
         android:text="@string/button_delete_account"
         app:backgroundTint="#B64C4C"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_delete_data" />
+        app:layout_constraintTop_toBottomOf="@+id/button_change_password" />
+
+    <Button
+        android:id="@+id/button_change_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
+        android:text="@string/button_change_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_change_email" />
+
 
     <Button
         android:id="@+id/button_delete_data"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginRight="6dp"
         android:text="@string/button_delete_data"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_change_password" />
-
-    <Button
-        android:id="@+id/button_log_out"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginRight="6dp"
-        android:onClick="logout"
-        android:text="@string/button_log_out"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_delete_account" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_place"
@@ -89,18 +94,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:text="@string/title_profile"
         android:textSize="36sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -67,6 +67,7 @@ public class ProfileFragment extends Fragment {
         final Button changePasswordButton = root.findViewById(R.id.button_change_password);
         final Button deleteAccountButton = root.findViewById(R.id.button_delete_account);
         final Button logOutButton = root.findViewById(R.id.button_log_out);
+        final Button linkGoogleFit = root.findViewById(R.id.button_link_google_fit);
 
 
         changeEmailButton.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +99,16 @@ public class ProfileFragment extends Fragment {
                 Toast toast = Toast.makeText(getContext(), "Logged out!", Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(new Intent(root.getContext(), LoginActivity.class));
+            }
+        });
+
+        linkGoogleFit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Proceed with loging into google and pulling information from google fit
+                Toast toast = Toast.makeText(getContext(), "Linking Google Fit!", Toast.LENGTH_SHORT);
+                toast.show();
+//                startActivity(new Intent(root.getContext(), LoginActivity.class));
             }
         });
 

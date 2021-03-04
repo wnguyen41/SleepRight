@@ -93,6 +93,7 @@ public class SleepSession {
 
             }
         });
+        System.out.println("Size of Sessions List (before return): " + sessions.size());
         return sessions;
     }
 }

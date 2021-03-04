@@ -41,6 +41,7 @@ public class HomeFragment extends Fragment {
         SleepSession session = new SleepSession(test, start, end, num);
         ArrayList<SleepSession> sessions = session.querySessions();
         int size = sessions.size();
+        System.out.println("Size of sessions after query: " + size);
 
         ListAdapter listAdapter = new ListAdapter(sessions);
         recyclerView.setAdapter(listAdapter);
