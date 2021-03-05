@@ -24,11 +24,11 @@
             app:title="@string/wearables_title"
             app:iconSpaceReserved="false"/>
 
-        <CheckBoxPreference
-            app:key="google_fit"
-            app:title="@string/google_fit_title"
-            android:summary="Import your Google Fit data."
-            app:iconSpaceReserved="false"/>
+<!--        <CheckBoxPreference-->
+<!--            app:key="google_fit"-->
+<!--            app:title="@string/google_fit_title"-->
+<!--            android:summary="Import your Google Fit data."-->
+<!--            app:iconSpaceReserved="false"/>-->
 
         <CheckBoxPreference
             android:summary="SleepRight will recommend you the best time to sleep based on your events for the next day and your ideal sleep income!"
