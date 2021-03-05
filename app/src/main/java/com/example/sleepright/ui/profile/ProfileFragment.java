@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sleepright.GoogleLoginActivity;
 import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
 import com.example.sleepright.ui.login.LoginActivity;
@@ -105,10 +106,10 @@ public class ProfileFragment extends Fragment {
         linkGoogleFit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Proceed with loging into google and pulling information from google fit
                 Toast toast = Toast.makeText(getContext(), "Linking Google Fit!", Toast.LENGTH_SHORT);
                 toast.show();
-//                startActivity(new Intent(root.getContext(), LoginActivity.class));
+                // Start the activity containing the google sign in.
+                startActivity(new Intent(root.getContext(), GoogleLoginActivity.class));
             }
         });
 
