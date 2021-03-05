@@ -11,6 +11,14 @@
             android:title="Ideal sleep income"
             app:iconSpaceReserved="false"/>
 
+        <Preference
+            android:key="preferred_bedtime"
+            android:title="Preferred bedtime"
+            android:dialogTitle="Set time"
+            android:dialogMessage="Type in time:"
+            android:inputType="text"
+            app:iconSpaceReserved="false"/>
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="switch_bedtime_notification"
