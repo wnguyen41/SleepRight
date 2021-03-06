@@ -1,7 +1,27 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <PreferenceCategory app:title="@string/sleep_header">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Personal">
+        <EditTextPreference
+            android:defaultValue="0 years old"
+            android:inputType="number"
+            android:key="pref_age"
+            android:title="Age (in years)"
+            app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+            android:defaultValue="0 lbs"
+            android:inputType="number"
+            android:key="pref_weight"
+            android:title="Weight (in pounds)"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/sleep_header">
         <ListPreference
             android:defaultValue="8 hours"
             android:entries="@array/times_array"
@@ -9,40 +29,41 @@
             android:key="ideal_sleep_income"
             android:summary="%s"
             android:title="Ideal sleep income"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <Preference
-            android:key="preferred_bedtime"
-            android:title="Preferred bedtime"
+            android:dialogMessage="Enter time:"
             android:dialogTitle="Set time"
-            android:dialogMessage="Type in time:"
-            android:inputType="text"
-            app:iconSpaceReserved="false"/>
+            android:key="target_wakeup_time"
+            android:title="Target wakeup time"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="switch_bedtime_notification"
             android:title="Bedtime notification"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/integration_header">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/integration_header">
         <CheckBoxPreference
+            app:iconSpaceReserved="false"
             app:key="Wearables"
-            app:title="@string/wearables_title"
-            app:iconSpaceReserved="false"/>
+            app:title="@string/wearables_title" />
 
-<!--        <CheckBoxPreference-->
-<!--            app:key="google_fit"-->
-<!--            app:title="@string/google_fit_title"-->
-<!--            android:summary="Import your Google Fit data."-->
-<!--            app:iconSpaceReserved="false"/>-->
+        <!--        <CheckBoxPreference-->
+        <!--            app:key="google_fit"-->
+        <!--            app:title="@string/google_fit_title"-->
+        <!--            android:summary="Import your Google Fit data."-->
+        <!--            app:iconSpaceReserved="false"/>-->
 
-        <CheckBoxPreference
-            android:summary="SleepRight will recommend you the best time to sleep based on your events for the next day and your ideal sleep income!"
-            app:key="google_calendar"
-            app:title="@string/google_calendar_title"
-            app:iconSpaceReserved="false"/>
+        <!--        <CheckBoxPreference-->
+        <!--            android:summary="SleepRight will recommend you the best time to sleep based on your events for the next day and your ideal sleep income!"-->
+        <!--            app:key="google_calendar"-->
+        <!--            app:title="@string/google_calendar_title"-->
+        <!--            app:iconSpaceReserved="false"/>-->
 
     </PreferenceCategory>
 

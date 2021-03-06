@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -34,24 +35,30 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor myEditor = prefs.edit();
 
-        createNotificationChannel();
+        EditTextPreference agePref = findPreference("pref_age");
+        EditTextPreference weightPref = findPreference("pref_weight");
         ListPreference sleepIncomePref = findPreference("ideal_sleep_income");
         SwitchPreference notifications = findPreference("switch_bedtime_notification");
-        Preference bedtimePref = findPreference("preferred_bedtime");
+        Preference wakeupTimePref = findPreference("target_wakeup_time");
 
+        agePref.setOnPreferenceChangeListener(this);
+        agePref.setSummary(prefs.getInt("userAge", 0) + " years old");
+        weightPref.setOnPreferenceChangeListener(this);
+        weightPref.setSummary(prefs.getInt("userWeight", 0) + " lbs");
         sleepIncomePref.setOnPreferenceChangeListener(this);
         notifications.setOnPreferenceChangeListener(this);
 
-        int hour = prefs.getInt("bedtimeHour", 10);
-        String min = prefs.getString("bedtimeMin", "00");
-        String am_pm = prefs.getString("bedtimeAMPM", "PM");
-        bedtimePref.setSummary(hour + ":" + min + " " + am_pm);
-        bedtimePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+        int hour = prefs.getInt("wakeupHour", 10);
+        String min = prefs.getString("wakeupMin", "00");
+        String am_pm = prefs.getString("wakeupAMPM", "PM");
+        wakeupTimePref.setSummary(hour + ":" + min + " " + am_pm);
+        wakeupTimePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                int hour = prefs.getInt("bedtimeHour", 10);
-                String min = prefs.getString("bedtimeMin", "00");
+                int hour = prefs.getInt("wakeupHour", 10);
+                String min = prefs.getString("wakeupMin", "00");
 
                 TimePickerDialog bedtimePicker;
                 bedtimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
@@ -81,20 +88,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                         String formattedMin;
                         if (selectedMin < 10) {
                             formattedMin = "0" + String.valueOf(selectedMin);
-                        }
-                        else {
+                        } else {
                             formattedMin = String.valueOf(selectedMin);
                         }
 
-                        bedtimePref.setSummary(selectedHour + ":" + formattedMin + " " + am_pm);
-//                        bedtimePref.setDefaultValue(selectedHour + ":" + formattedMin + " " + am_pm);
-                        myEditor.putInt("bedtimeHour", selectedHour);
-                        myEditor.putString("bedtimeMin", formattedMin);
-                        myEditor.putString("bedtimeAMPM", am_pm);
+                        wakeupTimePref.setSummary(selectedHour + ":" + formattedMin + " " + am_pm);
+//                        wakeupTimePref.setDefaultValue(selectedHour + ":" + formattedMin + " " + am_pm);
+                        myEditor.putInt("wakeupHour", selectedHour);
+                        myEditor.putString("wakeupMin", formattedMin);
+                        myEditor.putString("wakeupAMPM", am_pm);
+                        myEditor.apply();
                         myEditor.commit();
                     }
                 }, hour, Integer.parseInt(min), false);
-                bedtimePicker.setTitle("Set bedtime");
+                bedtimePicker.setTitle("Set wakeup time");
                 bedtimePicker.show();
                 return true;
             }
@@ -106,39 +113,52 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String stringValue = newValue.toString();
+        SharedPreferences.Editor myEditor = prefs.edit();
+
         if (preference instanceof ListPreference && preference.getKey().equals("ideal_sleep_income")) {
-            Toast toast = Toast.makeText(getContext(), "Ideal Sleep Income", Toast.LENGTH_SHORT);
-            toast.show();
+//            Toast toast = Toast.makeText(getContext(), "Ideal Sleep Income", Toast.LENGTH_SHORT);
+//            toast.show();
         } else if (preference instanceof SwitchPreference && preference.getKey().equals("switch_bedtime_notification")) {
             if (((SwitchPreference) preference).isEnabled()) {
                 // notifications
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "sleepright")
-                        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-                        .setContentTitle("SleepRight Notification")
-                        .setContentText("Blank")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+//                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "sleepright")
+//                        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+//                        .setContentTitle("SleepRight Notification")
+//                        .setContentText("Blank")
+//                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+//
+//                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
 
             }
+        } else if (preference instanceof EditTextPreference) {
+            try {
+                if (preference.getKey().equals("pref_age")) {
+                    String ageInput = newValue.toString();
+                    if (!ageInput.isEmpty()) {
+                        myEditor.putInt("userAge", Integer.parseInt(ageInput));
+                        preference.setSummary(ageInput + " years old");
+                    }
+
+                } else if (preference.getKey().equals("pref_weight")) {
+                    String weightInput = newValue.toString();
+                    if (!weightInput.isEmpty()) {
+                        myEditor.putInt("userWeight", Integer.parseInt(weightInput));
+                        preference.setSummary(weightInput + " lb");
+                    }
+                }
+                myEditor.apply();
+                myEditor.commit();
+            } catch (NumberFormatException nfe) {
+                ((EditTextPreference) preference).setTitle("");
+                Toast toast = Toast.makeText(getContext(), "Please input only numbers", Toast.LENGTH_SHORT);
+                toast.show();
+            }
         } else {
-            Toast toast = Toast.makeText(getContext(), "Other Preference", Toast.LENGTH_SHORT);
-            toast.show();
+//            Toast toast = Toast.makeText(getContext(), "Other Preference", Toast.LENGTH_SHORT);
+//            toast.show();
         }
         return true;
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "bedtimeChannel";
-            String description = "Channel for bedtime notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("sleepright", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 
 }
