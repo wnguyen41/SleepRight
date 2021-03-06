@@ -32,8 +32,6 @@
             app:iconSpaceReserved="false" />
 
         <Preference
-            android:dialogMessage="Enter time:"
-            android:dialogTitle="Set time"
             android:key="target_wakeup_time"
             android:title="Target wakeup time"
             app:iconSpaceReserved="false" />

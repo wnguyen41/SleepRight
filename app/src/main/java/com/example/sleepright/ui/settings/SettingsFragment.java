@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -40,11 +41,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         ListPreference sleepIncomePref = findPreference("ideal_sleep_income");
         SwitchPreference notifications = findPreference("switch_bedtime_notification");
         Preference wakeupTimePref = findPreference("target_wakeup_time");
+//        CheckBoxPreference googleFitPref = findPreference("google_fit");
+//        CheckBoxPreference googleCalendarPref = findPreference("google_calendar");
 
         agePref.setOnPreferenceChangeListener(this);
         agePref.setSummary(prefs.getInt("userAge", 0) + " years old");
         weightPref.setOnPreferenceChangeListener(this);
-        weightPref.setSummary(prefs.getInt("userWeight", 0) + " lbs");
+        weightPref.setSummary(prefs.getInt("userWeight", 0) + " lb");
         sleepIncomePref.setOnPreferenceChangeListener(this);
         notifications.setOnPreferenceChangeListener(this);
 
@@ -149,7 +152,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 myEditor.apply();
                 myEditor.commit();
             } catch (NumberFormatException nfe) {
-                ((EditTextPreference) preference).setTitle("");
                 Toast toast = Toast.makeText(getContext(), "Please input only numbers", Toast.LENGTH_SHORT);
                 toast.show();
             }
