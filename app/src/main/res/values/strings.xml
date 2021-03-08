@@ -24,6 +24,12 @@
     <string name="prompt_verify_password">Verify Password</string>
     <string name="already_have_account">Already have an account?</string>
 
+    <!-- Strings related to GoogleLoginActivity -->
+    <string name="button_cancel">Cancel</string>
+    <string name="button_import">Import</string>
+    <string name="status_text">Status</string>
+    <string name="item_count">Count: 0</string>
+
     <!-- Button titles -->
     <string name="button_google_fit">Link Google Fit</string>
     <string name="button_change_email">Change Email</string>
