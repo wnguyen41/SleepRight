@@ -1,20 +1,15 @@
 package com.example.sleepright.ui.settings;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -23,6 +18,7 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.example.sleepright.R;
+import com.example.sleepright.SleepReceiver;
 
 import java.util.Calendar;
 
@@ -116,13 +112,36 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String stringValue = newValue.toString();
-        SharedPreferences.Editor myEditor = prefs.edit();
+        SharedPreferences.Editor prefsEditor = prefs.edit();
 
         if (preference instanceof ListPreference && preference.getKey().equals("ideal_sleep_income")) {
+            prefsEditor.putString("idealSleepIncome", newValue.toString());
+            prefsEditor.apply();
+            prefsEditor.commit();
 //            Toast toast = Toast.makeText(getContext(), "Ideal Sleep Income", Toast.LENGTH_SHORT);
 //            toast.show();
         } else if (preference instanceof SwitchPreference && preference.getKey().equals("switch_bedtime_notification")) {
             if (((SwitchPreference) preference).isEnabled()) {
+                prefsEditor.putBoolean("notificationPreference", true);
+                prefsEditor.apply();
+                prefsEditor.commit();
+                Toast.makeText(getContext(), "Notifications turned on!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getContext(), SleepReceiver.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent,0);
+
+                AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                int wakeupHour = prefs.getInt("wakeupHour", 0);
+                String wakeupMin = prefs.getString("wakeupMin", "");
+                String wakeupAMPM = prefs.getString("wakeupAMPM", "AM");
+
+                Calendar c = Calendar.getInstance();
+                // change to set notification time
+                long notificationTimeTrigger = c.getTimeInMillis();
+                long tenSecondsInMillis = 1000 + 10;
+                alarmManager.set(AlarmManager.RTC_WAKEUP, notificationTimeTrigger + tenSecondsInMillis, pendingIntent);
+
+
                 // notifications
 //                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "sleepright")
 //                        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
@@ -133,30 +152,36 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 //                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
 
             }
+            else if (((SwitchPreference) preference).isEnabled() == false) {
+                prefsEditor.putBoolean("notificationPreference", false);
+                prefsEditor.apply();
+                prefsEditor.commit();
+                Toast.makeText(getContext(), "Notifications turned off!", Toast.LENGTH_SHORT).show();
+            }
         } else if (preference instanceof EditTextPreference) {
             try {
                 if (preference.getKey().equals("pref_age")) {
                     String ageInput = newValue.toString();
                     if (!ageInput.isEmpty()) {
-                        myEditor.putInt("userAge", Integer.parseInt(ageInput));
+                        prefsEditor.putInt("userAge", Integer.parseInt(ageInput));
                         preference.setSummary(ageInput + " years old");
                     }
 
                 } else if (preference.getKey().equals("pref_weight")) {
                     String weightInput = newValue.toString();
                     if (!weightInput.isEmpty()) {
-                        myEditor.putInt("userWeight", Integer.parseInt(weightInput));
+                        prefsEditor.putInt("userWeight", Integer.parseInt(weightInput));
                         preference.setSummary(weightInput + " lb");
                     }
                 }
-                myEditor.apply();
-                myEditor.commit();
+                prefsEditor.apply();
+                prefsEditor.commit();
             } catch (NumberFormatException nfe) {
                 Toast toast = Toast.makeText(getContext(), "Please input only numbers", Toast.LENGTH_SHORT);
                 toast.show();
             }
         } else {
-//            Toast toast = Toast.makeText(getContext(), "Other Preference", Toast.LENGTH_SHORT);
+//            Toast toast = Toast.makeText(getContext(), "Other Preferences", Toast.LENGTH_SHORT);
 //            toast.show();
         }
         return true;

@@ -34,6 +34,7 @@
         <activity android:name=".ui.profile.ChangeEmailActivity" />
         <activity android:name=".ui.profile.ChangePasswordActivity" />
         <activity android:name=".ui.profile.DeleteAccountActivity" />
+        <receiver android:name=".SleepReceiver" />
     </application>
 
 </manifest>
