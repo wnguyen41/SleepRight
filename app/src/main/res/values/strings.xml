@@ -29,6 +29,7 @@
     <string name="button_import">Import</string>
     <string name="status_text">Status</string>
     <string name="item_count">Count: 0</string>
+    <string name="logged_in_as">Logged in as:</string>
 
     <!-- Button titles -->
     <string name="button_google_fit">Link Google Fit</string>
