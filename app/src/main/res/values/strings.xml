@@ -30,6 +30,8 @@
     <string name="status_text">Status</string>
     <string name="item_count">Count: 0</string>
     <string name="logged_in_as">Logged in as:</string>
+    <string name="button_google_sign_in">Sign In With Google</string>
+    <string name="button_sign_out">Sign Out</string>
 
     <!-- Button titles -->
     <string name="button_google_fit">Link Google Fit</string>
