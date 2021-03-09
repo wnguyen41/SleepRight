@@ -1,5 +1,6 @@
 package com.example.sleepright.ui.home;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -166,6 +168,11 @@ public class HomeFragment extends Fragment {
 
                     String recommendation = startString + " until " + diffString + " for about " + Integer.toString(avgHours) + " hours!";
                     recommendedSleep.setText(recommendation);
+
+                    // add recommendation to SharedPreferences
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    SharedPreferences.Editor prefsEditor = prefs.edit();
+//                    prefsEditor.put
                 }
                 else
                 {
