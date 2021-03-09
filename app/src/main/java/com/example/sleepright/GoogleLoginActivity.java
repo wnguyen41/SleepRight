@@ -48,9 +48,14 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
 
     private static final String TAG = "debug";
     private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInAccount mAccount = null;
     private TextView mStatus, mImportCount, mLoggedAs;
     private Button mSignOut, mGoogleSignIn;
     private ArrayList<SleepSession> mSessionList;
+
+    private final FitnessOptions fitnessOptions = FitnessOptions.builder()
+            .addDataType(DataType.TYPE_SLEEP_SEGMENT, FitnessOptions.ACCESS_READ)
+            .build();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +93,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                 cancel();
                 break;
             case R.id.button_import:
-                importData();
+                fitSignIn();
                 break;
             case R.id.button_sign_out:
                 signOut();
@@ -97,12 +102,32 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private void fitSignIn() {
+        if (oAuthPermissionsApproved()) {
+            importData();
+        } else {
+            GoogleSignIn.requestPermissions(this, 1,
+                    getGoogleAccount(), fitnessOptions);
+        }
+    }
+
+    private boolean oAuthPermissionsApproved() {
+        return GoogleSignIn.hasPermissions(getGoogleAccount(), fitnessOptions);
+    }
+
+    private GoogleSignInAccount getGoogleAccount() {
+        return GoogleSignIn.getAccountForExtension(
+                this, fitnessOptions);
+    }
+
+
+
 
     private void importData(){
 
         // Setting a start and end date using a range of 1 week before this moment.
         ZonedDateTime endTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
-        ZonedDateTime startTime = endTime.minusMonths(2);
+        ZonedDateTime startTime = endTime.minusMonths(3);
         Log.i(TAG, "Range Start: " + startTime.toString());
         Log.i(TAG, "Range End: " + endTime.toString());
 
@@ -116,10 +141,10 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                 "REM sleep"
         };
 
-        GoogleSignInOptionsExtension fitnessOptions =
-                FitnessOptions.builder()
-                        .addDataType(DataType.TYPE_SLEEP_SEGMENT, FitnessOptions.ACCESS_READ)
-                        .build();
+//        GoogleSignInOptionsExtension fitnessOptions =
+//                FitnessOptions.builder()
+//                        .addDataType(DataType.TYPE_SLEEP_SEGMENT, FitnessOptions.ACCESS_READ)
+//                        .build();
 
         SessionReadRequest request = new SessionReadRequest.Builder()
                 .readSessionsFromAllApps()
@@ -131,7 +156,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                 .setTimeInterval(startTime.toEpochSecond(), endTime.toEpochSecond(), TimeUnit.SECONDS)
                 .build();
 
-        Fitness.getSessionsClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
+        Fitness.getSessionsClient(this, getGoogleAccount())
                 .readSession(request)
                 .addOnSuccessListener(response -> {
                             List<Session> sessions = response.getSessions();
@@ -220,6 +245,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
     public void updateUI(GoogleSignInAccount account){
         // TODO: This is temporary
         if(account != null){
+            mAccount = account;
             mLoggedAs.setText("Logged in as: " + account.getGivenName());
             mGoogleSignIn.setEnabled(false);
             mSignOut.setEnabled(true);
