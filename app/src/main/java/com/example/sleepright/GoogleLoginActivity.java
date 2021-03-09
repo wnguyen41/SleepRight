@@ -1,9 +1,11 @@
 package com.example.sleepright;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,15 +17,40 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Field;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.request.DataReadRequest;
+import com.google.android.gms.fitness.request.SessionReadRequest;
+import com.google.android.gms.fitness.result.DataReadResponse;
+import com.google.android.gms.fitness.result.DataReadResult;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class GoogleLoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = "debug";
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatus, mImportCount, mLoggedAs;
     private Button mSignOut, mGoogleSignIn;
+    private ArrayList<SleepSession> mSessionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +88,77 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                 cancel();
                 break;
             case R.id.button_import:
-                //importData();
+                importData();
                 break;
             case R.id.button_sign_out:
                 signOut();
                 break;
             // ...
         }
+    }
+
+
+    private void importData(){
+
+        // Setting a start and end date using a range of 1 week before this moment.
+        ZonedDateTime endTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
+        ZonedDateTime startTime = endTime.minusMonths(2);
+        Log.i(TAG, "Range Start: " + startTime.toString());
+        Log.i(TAG, "Range End: " + endTime.toString());
+
+        String[] SLEEP_STAGE_NAMES = {
+                "Unused",
+                "Awake (during sleep)",
+                "Sleep",
+                "Out-of-bed",
+                "Light sleep",
+                "Deep sleep",
+                "REM sleep"
+        };
+
+        GoogleSignInOptionsExtension fitnessOptions =
+                FitnessOptions.builder()
+                        .addDataType(DataType.TYPE_SLEEP_SEGMENT, FitnessOptions.ACCESS_READ)
+                        .build();
+
+        SessionReadRequest request = new SessionReadRequest.Builder()
+                .readSessionsFromAllApps()
+                // By default, only activity sessions are included, so it is necessary to explicitly
+                // request sleep sessions. This will cause activity sessions to be *excluded*.
+                .includeSleepSessions()
+                // Sleep segment data is required for details of the fine-granularity sleep, if it is present.
+                .read(DataType.TYPE_SLEEP_SEGMENT)
+                .setTimeInterval(startTime.toEpochSecond(), endTime.toEpochSecond(), TimeUnit.SECONDS)
+                .build();
+
+        Fitness.getSessionsClient(this, GoogleSignIn.getAccountForExtension(this, fitnessOptions))
+                .readSession(request)
+                .addOnSuccessListener(response -> {
+                            List<Session> sessions = response.getSessions();
+                            Log.i(TAG, "Number of returned sessions is: " + sessions.size());
+                            for (Session session : sessions) {
+                                long sessionStart = session.getStartTime(TimeUnit.SECONDS);
+                                long sessionEnd = session.getEndTime(TimeUnit.SECONDS);
+                                Log.i(TAG, "\t* Sleep between " + sessionStart + " and " + sessionEnd);
+
+                                // If the sleep session has finer granularity sub-components, extract them:
+                                List<DataSet> dataSets = response.getDataSet(session);
+                                for (DataSet dataSet : dataSets) {
+                                    for (DataPoint point : dataSet.getDataPoints()) {
+                                        int sleepStageVal = point.getValue(Field.FIELD_SLEEP_SEGMENT_TYPE).asInt();
+                                        String sleepStage = SLEEP_STAGE_NAMES[sleepStageVal];
+                                        long segmentStart = point.getStartTime(TimeUnit.SECONDS);
+                                        long segmentEnd = point.getEndTime(TimeUnit.SECONDS);
+                                        Log.i(TAG, "\t* Type " + sleepStage + " between " + segmentStart + " and " + segmentEnd);
+                                    }
+                                }
+
+                            }
+                        })
+                .addOnFailureListener(response -> {
+                    Log.i(TAG, "Sessions request failed. " + response.getMessage());
+                });
+
     }
 
     private void signOut() {
