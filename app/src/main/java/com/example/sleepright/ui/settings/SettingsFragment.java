@@ -22,7 +22,7 @@ import com.example.sleepright.SleepReceiver;
 
 import java.util.Calendar;
 
-public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private SharedPreferences prefs;
 
     @Override
@@ -30,7 +30,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
 //        prefs = getContext().getSharedPreferences(".ui.settings.SettingsActivity", Context.MODE_PRIVATE);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor myEditor = prefs.edit();
+        SharedPreferences.Editor prefsEditor = prefs.edit();
 
         EditTextPreference agePref = findPreference("pref_age");
         EditTextPreference weightPref = findPreference("pref_weight");
@@ -45,68 +45,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         weightPref.setOnPreferenceChangeListener(this);
         weightPref.setSummary(prefs.getInt("userWeight", 0) + " lb");
         sleepIncomePref.setOnPreferenceChangeListener(this);
-        notifications.setOnPreferenceChangeListener(this);
-
+        notifications.setOnPreferenceClickListener(this);
 
         int hour = prefs.getInt("wakeupHour", 10);
         String min = prefs.getString("wakeupMin", "00");
         String am_pm = prefs.getString("wakeupAMPM", "PM");
         wakeupTimePref.setSummary(hour + ":" + min + " " + am_pm);
-        wakeupTimePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                int hour = prefs.getInt("wakeupHour", 10);
-                String min = prefs.getString("wakeupMin", "00");
-
-                TimePickerDialog bedtimePicker;
-                bedtimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        String am_pm = "";
-                        int selectedHour;
-                        int selectedMin;
-                        Calendar bedtime = Calendar.getInstance();
-                        bedtime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        bedtime.set(Calendar.MINUTE, minute);
-
-                        selectedHour = bedtime.get(Calendar.HOUR_OF_DAY);
-                        if (bedtime.get(Calendar.AM_PM) == Calendar.AM) {
-                            am_pm = "AM";
-                            if (selectedHour == 0) {
-                                selectedHour = 12;
-                            }
-                        } else if (bedtime.get(Calendar.AM_PM) == Calendar.PM) {
-                            am_pm = "PM";
-                            if (selectedHour > 12) {
-                                selectedHour = bedtime.get(Calendar.HOUR_OF_DAY) - 12;
-                            }
-                        }
-
-                        selectedMin = bedtime.get(Calendar.MINUTE);
-                        String formattedMin;
-                        if (selectedMin < 10) {
-                            formattedMin = "0" + String.valueOf(selectedMin);
-                        } else {
-                            formattedMin = String.valueOf(selectedMin);
-                        }
-
-                        wakeupTimePref.setSummary(selectedHour + ":" + formattedMin + " " + am_pm);
-//                        wakeupTimePref.setDefaultValue(selectedHour + ":" + formattedMin + " " + am_pm);
-                        myEditor.putInt("wakeupHour", selectedHour);
-                        myEditor.putString("wakeupMin", formattedMin);
-                        myEditor.putString("wakeupAMPM", am_pm);
-                        myEditor.apply();
-                        myEditor.commit();
-                    }
-                }, hour, Integer.parseInt(min), false);
-                bedtimePicker.setTitle("Set wakeup time");
-                bedtimePicker.show();
-                return true;
-            }
-        });
-
-
+        wakeupTimePref.setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -118,46 +63,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             prefsEditor.putString("idealSleepIncome", newValue.toString());
             prefsEditor.apply();
             prefsEditor.commit();
-//            Toast toast = Toast.makeText(getContext(), "Ideal Sleep Income", Toast.LENGTH_SHORT);
-//            toast.show();
-        } else if (preference instanceof SwitchPreference && preference.getKey().equals("switch_bedtime_notification")) {
-            if (((SwitchPreference) preference).isEnabled()) {
-                prefsEditor.putBoolean("notificationPreference", true);
-                prefsEditor.apply();
-                prefsEditor.commit();
-                Toast.makeText(getContext(), "Notifications turned on!", Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(getContext(), SleepReceiver.class);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent,0);
-
-                AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                int wakeupHour = prefs.getInt("wakeupHour", 0);
-                String wakeupMin = prefs.getString("wakeupMin", "");
-                String wakeupAMPM = prefs.getString("wakeupAMPM", "AM");
-
-                Calendar c = Calendar.getInstance();
-                // change to set notification time
-                long notificationTimeTrigger = c.getTimeInMillis();
-                long tenSecondsInMillis = 1000 + 10;
-                alarmManager.set(AlarmManager.RTC_WAKEUP, notificationTimeTrigger + tenSecondsInMillis, pendingIntent);
-
-
-                // notifications
-//                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "sleepright")
-//                        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-//                        .setContentTitle("SleepRight Notification")
-//                        .setContentText("Blank")
-//                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-//
-//                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
-
-            }
-            else if (((SwitchPreference) preference).isEnabled() == false) {
-                prefsEditor.putBoolean("notificationPreference", false);
-                prefsEditor.apply();
-                prefsEditor.commit();
-                Toast.makeText(getContext(), "Notifications turned off!", Toast.LENGTH_SHORT).show();
-            }
+            Toast toast = Toast.makeText(getContext(), "Ideal Sleep Income Set!", Toast.LENGTH_SHORT);
+            toast.show();
         } else if (preference instanceof EditTextPreference) {
             try {
                 if (preference.getKey().equals("pref_age")) {
@@ -187,5 +94,73 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         return true;
     }
 
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        SharedPreferences.Editor prefsEditor = prefs.edit();
 
+        if (preference instanceof SwitchPreference && preference.getKey().equals("switch_bedtime_notification")) {
+            // isChecked returns state of switch after clicked
+            if (((SwitchPreference) preference).isChecked()) {
+                prefsEditor.putBoolean("notificationPreference", true);
+                prefsEditor.apply();
+                prefsEditor.commit();
+                Toast.makeText(getContext(), "Notifications turned on!", Toast.LENGTH_SHORT).show();
+            } else if (!((SwitchPreference) preference).isChecked()) {
+                prefsEditor.putBoolean("notificationPreference", false);
+                prefsEditor.apply();
+                prefsEditor.commit();
+                Toast.makeText(getContext(), "Notifications turned off!", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        } else if (preference != null && preference.getKey().equals("target_wake_time")) {
+            int hour = prefs.getInt("wakeupHour", 10);
+            String min = prefs.getString("wakeupMin", "00");
+
+            TimePickerDialog bedtimePicker;
+            bedtimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    String am_pm = "";
+                    int selectedHour;
+                    int selectedMin;
+                    Calendar bedtime = Calendar.getInstance();
+                    bedtime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    bedtime.set(Calendar.MINUTE, minute);
+
+                    selectedHour = bedtime.get(Calendar.HOUR_OF_DAY);
+                    if (bedtime.get(Calendar.AM_PM) == Calendar.AM) {
+                        am_pm = "AM";
+                        if (selectedHour == 0) {
+                            selectedHour = 12;
+                        }
+                    } else if (bedtime.get(Calendar.AM_PM) == Calendar.PM) {
+                        am_pm = "PM";
+                        if (selectedHour > 12) {
+                            selectedHour = bedtime.get(Calendar.HOUR_OF_DAY) - 12;
+                        }
+                    }
+
+                    selectedMin = bedtime.get(Calendar.MINUTE);
+                    String formattedMin;
+                    if (selectedMin < 10) {
+                        formattedMin = "0" + selectedMin;
+                    } else {
+                        formattedMin = String.valueOf(selectedMin);
+                    }
+
+                    preference.setSummary(selectedHour + ":" + formattedMin + " " + am_pm);
+//                        wakeupTimePref.setDefaultValue(selectedHour + ":" + formattedMin + " " + am_pm);
+                    prefsEditor.putInt("wakeupHour", selectedHour);
+                    prefsEditor.putString("wakeupMin", formattedMin);
+                    prefsEditor.putString("wakeupAMPM", am_pm);
+                    prefsEditor.apply();
+                    prefsEditor.commit();
+                }
+            }, hour, Integer.parseInt(min), false);
+            bedtimePicker.setTitle("Set wakeup time");
+            bedtimePicker.show();
+            return true;
+        }
+        return false;
+    }
 }
