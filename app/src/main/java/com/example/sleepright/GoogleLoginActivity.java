@@ -3,8 +3,13 @@ package com.example.sleepright;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,13 +24,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.FitnessStatusCodes;
+import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.request.SessionReadRequest;
 import com.google.android.gms.fitness.result.DataReadResponse;
@@ -35,18 +45,24 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import static java.text.DateFormat.getDateInstance;
+
 public class GoogleLoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "debug";
+    private static final int MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION = 1002;
+    private static final int MY_ACTIVITYS_AUTH_REQUEST_CODE = 1003;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount mAccount = null;
     private TextView mStatus, mImportCount, mLoggedAs;
@@ -126,10 +142,16 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
     private void importData(){
 
         // Setting a start and end date using a range of 1 week before this moment.
-        ZonedDateTime endTime = LocalDateTime.now().atZone(ZoneId.systemDefault());
-        ZonedDateTime startTime = endTime.minusMonths(3);
-        Log.i(TAG, "Range Start: " + startTime.toString());
-        Log.i(TAG, "Range End: " + endTime.toString());
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        long endTime = cal.getTimeInMillis();
+        cal.add(Calendar.WEEK_OF_YEAR, -1);
+        long startTime = cal.getTimeInMillis();
+
+        java.text.DateFormat dateFormat = getDateInstance();
+        Log.i(TAG, "Range Start: " + dateFormat.format(startTime));
+        Log.i(TAG, "Range End: " + dateFormat.format(endTime));
 
         String[] SLEEP_STAGE_NAMES = {
                 "Unused",
@@ -146,43 +168,89 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
 //                        .addDataType(DataType.TYPE_SLEEP_SEGMENT, FitnessOptions.ACCESS_READ)
 //                        .build();
 
-        SessionReadRequest request = new SessionReadRequest.Builder()
-                .readSessionsFromAllApps()
-                // By default, only activity sessions are included, so it is necessary to explicitly
-                // request sleep sessions. This will cause activity sessions to be *excluded*.
-                .includeSleepSessions()
-                // Sleep segment data is required for details of the fine-granularity sleep, if it is present.
-                .read(DataType.TYPE_SLEEP_SEGMENT)
-                .setTimeInterval(startTime.toEpochSecond(), endTime.toEpochSecond(), TimeUnit.SECONDS)
+        DataReadRequest request = new DataReadRequest.Builder()
+                // The data request can specify multiple data types to return, effectively
+                // combining multiple data queries into one call.
+                // In this example, it's very unlikely that the request is for several hundred
+                // datapoints each consisting of a few steps and a timestamp.  The more likely
+                // scenario is wanting to see how many steps were walked per day, for 7 days.
+                .aggregate(DataType.TYPE_ACTIVITY_SEGMENT)
+                // Analogous to a "Group By" in SQL, defines how data should be aggregated.
+                // bucketByTime allows for a time span, whereas bucketBySession would allow
+                // bucketing by "sessions", which would need to be defined in code.
+                .bucketByTime(1, TimeUnit.DAYS)
+                .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                 .build();
 
-        Fitness.getSessionsClient(this, getGoogleAccount())
-                .readSession(request)
+        Fitness.getHistoryClient(this, getGoogleAccount())
+                .readData(request)
                 .addOnSuccessListener(response -> {
-                            List<Session> sessions = response.getSessions();
-                            Log.i(TAG, "Number of returned sessions is: " + sessions.size());
-                            for (Session session : sessions) {
-                                long sessionStart = session.getStartTime(TimeUnit.SECONDS);
-                                long sessionEnd = session.getEndTime(TimeUnit.SECONDS);
-                                Log.i(TAG, "\t* Sleep between " + sessionStart + " and " + sessionEnd);
-
-                                // If the sleep session has finer granularity sub-components, extract them:
-                                List<DataSet> dataSets = response.getDataSet(session);
-                                for (DataSet dataSet : dataSets) {
-                                    for (DataPoint point : dataSet.getDataPoints()) {
-                                        int sleepStageVal = point.getValue(Field.FIELD_SLEEP_SEGMENT_TYPE).asInt();
-                                        String sleepStage = SLEEP_STAGE_NAMES[sleepStageVal];
-                                        long segmentStart = point.getStartTime(TimeUnit.SECONDS);
-                                        long segmentEnd = point.getEndTime(TimeUnit.SECONDS);
-                                        Log.i(TAG, "\t* Type " + sleepStage + " between " + segmentStart + " and " + segmentEnd);
-                                    }
-                                }
-
+                    if (response.getStatus().getStatusCode() == FitnessStatusCodes.NEEDS_OAUTH_PERMISSIONS) {
+                        try {
+                            response.getStatus().startResolutionForResult(
+                                    this,
+                                    MY_ACTIVITYS_AUTH_REQUEST_CODE);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i(TAG,e.getMessage());
+                        }
+                    }
+                    if (response.getBuckets().size() > 0) {
+                        Log.i(TAG, "Number of returned buckets of DataSets is: "
+                                + response.getBuckets().size());
+                        for (Bucket bucket : response.getBuckets()) {
+                            List<DataSet> dataSets = bucket.getDataSets();
+                            for (DataSet dataSet : dataSets) {
+                                dumpDataSet(dataSet);
                             }
+                        }
+                    } else if (response.getDataSets().size() > 0) {
+                        Log.i(TAG, "Number of returned DataSets is: "
+                                + response.getDataSets().size());
+                        for (DataSet dataSet : response.getDataSets()) {
+                            dumpDataSet(dataSet);
+                        }
+                    }
                         })
                 .addOnFailureListener(response -> {
+
                     Log.i(TAG, "Sessions request failed. " + response.getMessage());
                 });
+
+    }
+
+    private void dumpDataSet(DataSet dataSet) {
+        Log.i(TAG, "Data returned for Data type: "+dataSet.getDataType().getName()+"");
+
+        DateFormat dateFormat = getDateInstance();
+        float sleepHours = 0;
+        for (DataPoint dp : dataSet.getDataPoints()) {
+            //Log.i(TAG, dp.getOriginalDataSource().getStreamIdentifier().toString());
+            Log.i(TAG, "Data point:");
+            Log.i(TAG, "\tType: " + dp.getDataType().getName());
+            Log.i(TAG, "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.i(TAG, "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+            for(Field field : dp.getDataType().getFields()) {
+                if(dp.getOriginalDataSource().getAppPackageName().toString().contains("sleep") && field.getName().contains("duration")){
+                    Value value = dp.getValue(field);
+                    sleepHours  = (float) (Math.round((value.asInt() * 2.778 * 0.0000001*10.0))/10.0);
+                    Log.i(TAG, "\tField: Sleep duration in h " + sleepHours);
+                }
+                Log.i(TAG, "\tField: " + field.getName() +
+                        " Value: " + dp.getValue(field));
+            }
+        }
+//        List<DataPoint> dataPoints = dataSet.getDataPoints();
+//        Log.i(TAG, "Number of returned dataPoints are: " + dataPoints.size());
+//
+//        for (DataPoint dp :dataPoints) {
+//            Log.i(TAG,"Data point:");
+//            Log.i(TAG,"\tType: "+dp.getDataType().getName()+"");
+//            Log.i(TAG,"\tStart: "+(new Date(dp.getStartTime(TimeUnit.MILLISECONDS))).toString()+"");
+//            Log.i(TAG,"\tEnd: "+(new Date(dp.getEndTime(TimeUnit.MILLISECONDS))).toString()+"");
+//            for (Field field :dp.getDataType().getFields()) {
+//                Log.i(TAG,"\tField: "+field.getName()+" Value: "+dp.getValue(field)+"");
+//            }
+//        }
 
     }
 
@@ -204,7 +272,16 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         super.onStart();
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACTIVITY_RECOGNITION},
+                    MY_PERMISSIONS_REQUEST_ACTIVITY_RECOGNITION);
+
+        }
+
         updateUI(account);
     }
 

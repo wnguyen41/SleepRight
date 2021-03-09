@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "612897072268-tume31nhj922g3kiv2371bps3t2bsrj9.apps.googleusercontent.com",
+          "client_id": "612897072268-bafgm8tmoks65p831jg2n5t9oi4m79s3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sleepright",
+            "certificate_hash": "6b2893f366a3174e091c529e38bc5b49cb4b03a2"
+          }
+        },
+        {
+          "client_id": "612897072268-7oatqdmdkmm3plu0as2m0icltvn3ff88.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "612897072268-tume31nhj922g3kiv2371bps3t2bsrj9.apps.googleusercontent.com",
+              "client_id": "612897072268-7oatqdmdkmm3plu0as2m0icltvn3ff88.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
