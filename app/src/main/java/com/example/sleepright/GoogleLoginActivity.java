@@ -5,11 +5,15 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -76,6 +80,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
     private TextView mStatus, mImportCount, mLoggedAs;
     private Button mSignOut, mGoogleSignIn;
     private ArrayList<SleepSession> mSessionList;
+    private RecyclerView mRecyclerView_import;
 
     private final FitnessOptions fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_SLEEP_SEGMENT)
@@ -101,10 +106,14 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         mSignOut = (Button) findViewById(R.id.button_sign_out);
         mGoogleSignIn = (Button) findViewById(R.id.sign_in_button);
 
+        mRecyclerView_import = (RecyclerView) findViewById(R.id.recyclerView_import_list);
+
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.button_cancel).setOnClickListener(this);
         findViewById(R.id.button_import).setOnClickListener(this);
         findViewById(R.id.button_sign_out).setOnClickListener(this);
+
+        mSessionList = new ArrayList<>();
     }
 
     @Override
@@ -150,6 +159,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
 
 
     private void importData(){
+        mSessionList.clear();
 
         // Setting a start and end date using a range of 1 week before this moment.
         Calendar cal = Calendar.getInstance();
@@ -188,6 +198,8 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         Fitness.getHistoryClient(this, getGoogleAccount())
                 .readData(request)
                 .addOnSuccessListener(response -> {
+                    mStatus.setText("Success");
+                    mStatus.setTextColor(Color.parseColor("#00cc00"));
                     if (response.getBuckets().size() > 0) {
                         Log.i(TAG, "Number of returned buckets of DataSets is: "
                                 + response.getBuckets().size());
@@ -206,6 +218,8 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                     }
                         })
                 .addOnFailureListener(response -> {
+                    mStatus.setText("Failed");
+                    mStatus.setTextColor(Color.parseColor("#ff3333"));
                     Log.i(TAG, "Sessions request failed. " + response.getMessage());
                 });
 
@@ -259,19 +273,23 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
             DatabaseReference db = FirebaseDatabase.getInstance().getReference("SleepSessions");
             DatabaseReference newSession = db.push();
             newSession.setValue(googleSession);
+
+            mSessionList.add(googleSession);
         }
-//        List<DataPoint> dataPoints = dataSet.getDataPoints();
-//        Log.i(TAG, "Number of returned dataPoints are: " + dataPoints.size());
-//
-//        for (DataPoint dp :dataPoints) {
-//            Log.i(TAG,"Data point:");
-//            Log.i(TAG,"\tType: "+dp.getDataType().getName()+"");
-//            Log.i(TAG,"\tStart: "+(new Date(dp.getStartTime(TimeUnit.MILLISECONDS))).toString()+"");
-//            Log.i(TAG,"\tEnd: "+(new Date(dp.getEndTime(TimeUnit.MILLISECONDS))).toString()+"");
-//            for (Field field :dp.getDataType().getFields()) {
-//                Log.i(TAG,"\tField: "+field.getName()+" Value: "+dp.getValue(field)+"");
-//            }
-//        }
+
+        displayList();
+
+
+
+    }
+
+    private void displayList() {
+        ListAdapter listAdapter = new ListAdapter(mSessionList);
+        mRecyclerView_import.setAdapter(listAdapter);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView_import.setLayoutManager(layoutManager);
+
+        mImportCount.setText("Count: " + mSessionList.size());
 
     }
 
