@@ -36,6 +36,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         EditTextPreference weightPref = findPreference("pref_weight");
         ListPreference sleepIncomePref = findPreference("ideal_sleep_income");
         SwitchPreference notifications = findPreference("switch_bedtime_notification");
+        notifications.setDefaultValue(false);
         Preference wakeupTimePref = findPreference("target_wakeup_time");
 //        CheckBoxPreference googleFitPref = findPreference("google_fit");
 //        CheckBoxPreference googleCalendarPref = findPreference("google_calendar");
@@ -47,9 +48,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         sleepIncomePref.setOnPreferenceChangeListener(this);
         notifications.setOnPreferenceClickListener(this);
 
-        int hour = prefs.getInt("wakeupHour", 10);
+        int hour = prefs.getInt("wakeupHour", 8);
         String min = prefs.getString("wakeupMin", "00");
-        String am_pm = prefs.getString("wakeupAMPM", "PM");
+        String am_pm = prefs.getString("wakeupAMPM", "AM");
         wakeupTimePref.setSummary(hour + ":" + min + " " + am_pm);
         wakeupTimePref.setOnPreferenceClickListener(this);
     }
@@ -112,8 +113,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
                 Toast.makeText(getContext(), "Notifications turned off!", Toast.LENGTH_SHORT).show();
             }
             return true;
-        } else if (preference != null && preference.getKey().equals("target_wake_time")) {
-            int hour = prefs.getInt("wakeupHour", 10);
+        } else if (preference != null && preference.getKey().equals("target_wakeup_time")) {
+            int hour = prefs.getInt("wakeupHour", 8);
             String min = prefs.getString("wakeupMin", "00");
 
             TimePickerDialog bedtimePicker;

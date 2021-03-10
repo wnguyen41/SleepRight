@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        createNotificationChannel();
+//        createNotificationChannel();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -56,24 +56,26 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        // notifications -- currently triggers when user signs in
+        // setting alarm one hour before recommendation
+        // interval day: 1000*60*60*24
+        // interval 15 min: 900000 (for testing)
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if(prefs.getBoolean("notificationPreference", false)) {
+        int startHour = prefs.getInt("recommendationStartHour", 0);
+        if(prefs.getBoolean("notificationPreference", false) && !prefs.getBoolean("firstTime", false)) {
+            SharedPreferences.Editor prefsEditor = prefs.edit();
+            prefsEditor.putBoolean("firstTime", true);
+            prefsEditor.apply();
+            prefsEditor.commit();
+
+            Calendar updateTime = Calendar.getInstance();
+            updateTime.set(Calendar.HOUR_OF_DAY, startHour-1);
+            updateTime.set(Calendar.MINUTE, 0);
             Intent intent = new Intent(this, SleepReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            int wakeupHour = prefs.getInt("wakeupHour", 0);
-            String wakeupMin = prefs.getString("wakeupMin", "");
-            String wakeupAMPM = prefs.getString("wakeupAMPM", "AM");
-
-            Calendar c = Calendar.getInstance();
-            // change to set notification time
-            long notificationTimeTrigger = c.getTimeInMillis();
-            long tenSecondsInMillis = 1000 + 10;
-            alarmManager.set(AlarmManager.RTC_WAKEUP, notificationTimeTrigger + tenSecondsInMillis, pendingIntent);
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    //                        Toast.makeText(getContext(), updateTime.getTimeInMillis() + " " + startHour, Toast.LENGTH_LONG).show();
         }
-
 
 //        // RecyclerView code starts here
 //        ListFragment fragment = new ListFragment();
@@ -93,18 +95,18 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "bedtimeChannel";
-            String description = "Channel for bedtime notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("notifySleep", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+//    private void createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "bedtimeChannel";
+//            String description = "Channel for bedtime notifications";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("notifySleep", name, importance);
+//            channel.setDescription(description);
+//
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
 
 }

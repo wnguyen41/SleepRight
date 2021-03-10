@@ -40,7 +40,8 @@
             android:defaultValue="false"
             android:key="switch_bedtime_notification"
             android:title="Bedtime notification"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:defaultValue="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory

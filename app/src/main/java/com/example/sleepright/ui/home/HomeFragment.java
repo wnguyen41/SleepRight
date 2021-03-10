@@ -34,6 +34,7 @@ import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -172,7 +173,10 @@ public class HomeFragment extends Fragment {
                     // add recommendation to SharedPreferences
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                     SharedPreferences.Editor prefsEditor = prefs.edit();
-//                    prefsEditor.put
+                    prefsEditor.putString("recommendation", recommendation);
+                    prefsEditor.putInt("recommendationStartHour", startHour);
+                    prefsEditor.apply();
+                    prefsEditor.commit();
                 }
                 else
                 {
