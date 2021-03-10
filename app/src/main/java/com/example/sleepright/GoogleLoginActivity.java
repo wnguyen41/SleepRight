@@ -45,7 +45,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -249,6 +253,12 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                 Log.i(TAG, "\tField: " + field.getName() +
                         " Value: " + dp.getValue(field));
             }
+            Date startDate = new Date(dp.getStartTime(TimeUnit.MILLISECONDS));
+            Date endDate = new Date(dp.getEndTime(TimeUnit.MILLISECONDS));
+            SleepSession googleSession = new SleepSession(FirebaseAuth.getInstance().getCurrentUser().getUid(), startDate, endDate, 0);
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference("SleepSessions");
+            DatabaseReference newSession = db.push();
+            newSession.setValue(googleSession);
         }
 //        List<DataPoint> dataPoints = dataSet.getDataPoints();
 //        Log.i(TAG, "Number of returned dataPoints are: " + dataPoints.size());
