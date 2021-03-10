@@ -82,12 +82,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-/*
-        ListAdapter listAdapter = new ListAdapter(sessions);
-        recyclerView.setAdapter(listAdapter);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-*/
 
         recommendedSleep = root.findViewById(R.id.sleep_recommendation);
 
@@ -120,10 +114,10 @@ public class HomeFragment extends Fragment {
                     int listSize = usefulSessions.size();
                     for (int i = 0; i < listSize; i++)
                     {
-                        DateFormat goodStartHour = new SimpleDateFormat("hh");
+                        DateFormat goodStartHour = new SimpleDateFormat("HH");
                         String convertStartHour = goodStartHour.format(usefulSessions.get(i).getStartTime());
                         float start = Float.parseFloat(convertStartHour);
-                        DateFormat goodEndHour = new SimpleDateFormat("hh");
+                        DateFormat goodEndHour = new SimpleDateFormat("HH");
                         String convertEndHour = goodEndHour.format(usefulSessions.get(i).getEndTime());
                         float end = Float.parseFloat(convertEndHour);
                         System.out.println("Start: " + Float.toString(start));
@@ -204,68 +198,5 @@ public class HomeFragment extends Fragment {
 //        });
 //        return root;
     }
-/*
-    public String recommendedTime(){
-        String recommendation = "";
 
-        ArrayList<SleepSession> sessions = new ArrayList<>();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String uid = user.getUid();
-        FirebaseDatabase.getInstance().getReference().child("SleepSessions").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int count = 0;
-                snapshot.getValue();
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    SleepSession session = snap.getValue(SleepSession.class);
-                    System.out.println("User: " + uid);
-                    if (count < 7 && session.userID.equals(uid)) {
-                        System.out.println("Data: " + session.getUserID());
-                        System.out.println("Session Rating: " + session.sessionRating);
-                        sessions.add(session);
-                        count++;
-                        System.out.println("Size of Sessions List: " + sessions.size());
-                    }
-                    if (count == 7) {break; }
-                }
-                //Average out hours slept for high rated sleep times and try to not use poorly slept times
-                if (!sessions.isEmpty()) {
-                    int listSize = sessions.size();
-                    for (int i = 0; i < listSize; i++)
-                    {
-                        if (sessions.get(i).getSessionRating() > 3)
-                        {
-
-                        }
-                    }
-
-                    SleepSession current = sessions.get(position);
-                    Date startDate = current.getStartTime();
-                    Date endDate = current.getEndTime();
-                    DateFormat day = new SimpleDateFormat("MMM dd");
-                    DateFormat time = new SimpleDateFormat("hh:mm aa");
-                    float rating = current.getSessionRating();
-
-                    long difference = endDate.getTime() - startDate.getTime();
-                    float slept = TimeUnit.MILLISECONDS.toHours(difference);
-                    String timeSlept = Float.toString(slept);
-
-                    String date = day.format(startDate);
-                    String minutes = time.format(endDate);
-                }
-                else
-                {
-                    recommendation = "";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        return recommendation;
-    }
-*/
 }

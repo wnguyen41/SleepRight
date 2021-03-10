@@ -71,9 +71,11 @@ public class ActivityChangeSleep extends AppCompatActivity {
 
             // get the SleepSession's data
             Calendar startTimeCalender = Calendar.getInstance();
-            startTimeCalender.setTime(simpleDateFormat.parse(start_date_time_in.getText().toString()));// all done
+            if (start_date_time_in.getText().toString().length() > 0)
+                startTimeCalender.setTime(simpleDateFormat.parse(start_date_time_in.getText().toString()));// all done
             Calendar endTimeCalender = Calendar.getInstance();
-            endTimeCalender.setTime(simpleDateFormat.parse(end_date_time_in.getText().toString()));
+            if (end_date_time_in.getText().toString().length() > 0)
+                endTimeCalender.setTime(simpleDateFormat.parse(end_date_time_in.getText().toString()));
             float rating = ratingBar.getRating();
 
             // create SleepSession object
@@ -81,8 +83,7 @@ public class ActivityChangeSleep extends AppCompatActivity {
 
             // Read data and search for object and edit it
             DatabaseReference db = FirebaseDatabase.getInstance().getReference("SleepSessions");
-            //DatabaseReference newSession = db.push();
-            //newSession.setValue(newSleepSession);
+
 
             ArrayList<SleepSession> sessions = new ArrayList<>();
             int position = getIntent().getIntExtra("ADAPTER_POSITION", -1);
@@ -103,11 +104,13 @@ public class ActivityChangeSleep extends AppCompatActivity {
                         }
                         if (count == position){
                             //change value of sleep session in database
-                            session.setStartTime(startTimeCalender.getTime());
-                            session.setEndTime(endTimeCalender.getTime());
-                            session.setSessionRating(rating);
-                            db.child(snap.getKey()).setValue(session);
-                            System.out.println("This is the key that we changed: " + snap.getKey());
+                            if (start_date_time_in.getText().toString().length() > 0 && end_date_time_in.getText().toString().length() > 0) {
+                                session.setStartTime(startTimeCalender.getTime());
+                                session.setEndTime(endTimeCalender.getTime());
+                            }
+                                session.setSessionRating(rating);
+                                db.child(snap.getKey()).setValue(session);
+                                System.out.println("This is the key that we changed: " + snap.getKey());
                         }
                     }
                 }
