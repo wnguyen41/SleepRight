@@ -70,7 +70,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
     private ArrayList<SleepSession> mSessionList;
 
     private final FitnessOptions fitnessOptions = FitnessOptions.builder()
-            .addDataType(DataType.TYPE_SLEEP_SEGMENT, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_ACTIVITY_SEGMENT)
             .build();
 
     @Override
@@ -120,8 +120,10 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
 
     private void fitSignIn() {
         if (oAuthPermissionsApproved()) {
+            Log.i(TAG,"User has permissions.");
             importData();
         } else {
+            Log.i(TAG,"User does not have permissions.");
             GoogleSignIn.requestPermissions(this, 1,
                     getGoogleAccount(), fitnessOptions);
         }
@@ -146,7 +148,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         Date now = new Date();
         cal.setTime(now);
         long endTime = cal.getTimeInMillis();
-        cal.add(Calendar.WEEK_OF_YEAR, -1);
+        cal.add(Calendar.WEEK_OF_YEAR, -4);
         long startTime = cal.getTimeInMillis();
 
         java.text.DateFormat dateFormat = getDateInstance();
@@ -185,15 +187,6 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         Fitness.getHistoryClient(this, getGoogleAccount())
                 .readData(request)
                 .addOnSuccessListener(response -> {
-                    if (response.getStatus().getStatusCode() == FitnessStatusCodes.NEEDS_OAUTH_PERMISSIONS) {
-                        try {
-                            response.getStatus().startResolutionForResult(
-                                    this,
-                                    MY_ACTIVITYS_AUTH_REQUEST_CODE);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.i(TAG,e.getMessage());
-                        }
-                    }
                     if (response.getBuckets().size() > 0) {
                         Log.i(TAG, "Number of returned buckets of DataSets is: "
                                 + response.getBuckets().size());
@@ -212,7 +205,6 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
                     }
                         })
                 .addOnFailureListener(response -> {
-
                     Log.i(TAG, "Sessions request failed. " + response.getMessage());
                 });
 
