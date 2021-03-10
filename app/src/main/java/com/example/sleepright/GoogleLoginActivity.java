@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.FitnessActivities;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.FitnessStatusCodes;
 import com.google.android.gms.fitness.data.Bucket;
@@ -46,6 +47,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -70,7 +74,7 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
     private ArrayList<SleepSession> mSessionList;
 
     private final FitnessOptions fitnessOptions = FitnessOptions.builder()
-            .addDataType(DataType.TYPE_ACTIVITY_SEGMENT)
+            .addDataType(DataType.TYPE_SLEEP_SEGMENT)
             .build();
 
     @Override
@@ -148,22 +152,14 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
         Date now = new Date();
         cal.setTime(now);
         long endTime = cal.getTimeInMillis();
-        cal.add(Calendar.WEEK_OF_YEAR, -4);
+        cal.add(Calendar.WEEK_OF_YEAR, -8);
         long startTime = cal.getTimeInMillis();
 
         java.text.DateFormat dateFormat = getDateInstance();
         Log.i(TAG, "Range Start: " + dateFormat.format(startTime));
         Log.i(TAG, "Range End: " + dateFormat.format(endTime));
 
-        String[] SLEEP_STAGE_NAMES = {
-                "Unused",
-                "Awake (during sleep)",
-                "Sleep",
-                "Out-of-bed",
-                "Light sleep",
-                "Deep sleep",
-                "REM sleep"
-        };
+
 
 //        GoogleSignInOptionsExtension fitnessOptions =
 //                FitnessOptions.builder()
@@ -171,16 +167,17 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
 //                        .build();
 
         DataReadRequest request = new DataReadRequest.Builder()
+                .read(DataType.TYPE_SLEEP_SEGMENT)
                 // The data request can specify multiple data types to return, effectively
                 // combining multiple data queries into one call.
                 // In this example, it's very unlikely that the request is for several hundred
                 // datapoints each consisting of a few steps and a timestamp.  The more likely
                 // scenario is wanting to see how many steps were walked per day, for 7 days.
-                .aggregate(DataType.TYPE_ACTIVITY_SEGMENT)
+//                .aggregate(DataType.TYPE_ACTIVITY_SEGMENT)
                 // Analogous to a "Group By" in SQL, defines how data should be aggregated.
                 // bucketByTime allows for a time span, whereas bucketBySession would allow
                 // bucketing by "sessions", which would need to be defined in code.
-                .bucketByTime(1, TimeUnit.DAYS)
+//                .bucketByTime(1, TimeUnit.DAYS)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                 .build();
 
@@ -211,21 +208,43 @@ public class GoogleLoginActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void dumpDataSet(DataSet dataSet) {
+
+        String[] SLEEP_STAGE_NAMES = {
+                "Unused",
+                "Awake (during sleep)",
+                "Sleep",
+                "Out-of-bed",
+                "Light sleep",
+                "Deep sleep",
+                "REM sleep"
+        };
+
         Log.i(TAG, "Data returned for Data type: "+dataSet.getDataType().getName()+"");
 
-        DateFormat dateFormat = getDateInstance();
-        float sleepHours = 0;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d, h:mm a");
+        SimpleDateFormat hourMinFormat = new SimpleDateFormat("h:mm");
+
+        long sleepHours = 0;
+
         for (DataPoint dp : dataSet.getDataPoints()) {
             //Log.i(TAG, dp.getOriginalDataSource().getStreamIdentifier().toString());
             Log.i(TAG, "Data point:");
             Log.i(TAG, "\tType: " + dp.getDataType().getName());
             Log.i(TAG, "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
             Log.i(TAG, "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+
+            Duration dur = Duration.between(
+                    Instant.ofEpochMilli(dp.getStartTime(TimeUnit.MILLISECONDS)),
+                    Instant.ofEpochMilli(dp.getEndTime(TimeUnit.MILLISECONDS)));
+
             for(Field field : dp.getDataType().getFields()) {
-                if(dp.getOriginalDataSource().getAppPackageName().toString().contains("sleep") && field.getName().contains("duration")){
-                    Value value = dp.getValue(field);
-                    sleepHours  = (float) (Math.round((value.asInt() * 2.778 * 0.0000001*10.0))/10.0);
-                    Log.i(TAG, "\tField: Sleep duration in h " + sleepHours);
+                if(field.getName().contains("sleep")){
+                    Log.i(TAG, "\tField: " + field.getName() +
+                            " Value: " + SLEEP_STAGE_NAMES[dp.getValue(field).asInt()]);
+                    long totalSec = dur.getSeconds();
+                    long hours = totalSec / 3600;
+                    long mins = totalSec % 3600 / 60;
+                    Log.i(TAG, "\tField: Sleep duration: "+hours+":"+mins);
                 }
                 Log.i(TAG, "\tField: " + field.getName() +
                         " Value: " + dp.getValue(field));
