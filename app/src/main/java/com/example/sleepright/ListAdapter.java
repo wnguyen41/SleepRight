@@ -95,19 +95,21 @@ public class ListAdapter extends RecyclerView.Adapter {
                 SleepSession current = sessions.get(position);
                 Date startDate = current.getStartTime();
                 Date endDate = current.getEndTime();
-                DateFormat day = new SimpleDateFormat("MMM dd");
+                DateFormat day = new SimpleDateFormat("EEE. MMM dd");
                 DateFormat time = new SimpleDateFormat("hh:mm aa");
                 float rating = current.getSessionRating();
 
                 long difference = endDate.getTime() - startDate.getTime();
-                float slept = TimeUnit.MILLISECONDS.toHours(difference);
+                long slept = TimeUnit.MILLISECONDS.toSeconds(difference);
+                long hours = slept / 3600;
+                long mins = slept % 3600 / 60;
                 String timeSlept = Float.toString(slept);
 
                 String date = day.format(startDate);
                 String minutes = time.format(endDate);
 
                 day_month.setText(date);
-                hour_min.setText(timeSlept + " h");
+                hour_min.setText(hours + "h" + " "  + mins+"m");
                 rating_bar.setRating(rating);
             }
         }
