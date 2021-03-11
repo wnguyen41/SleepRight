@@ -48,6 +48,10 @@ public class ActivityChangeSleep extends AppCompatActivity {
         ratingBar = findViewById(R.id.rating_bar);
 
         Intent intent = getIntent();
+
+        start_date_time_in.setText(intent.getExtras().getString("start_date_string"));
+        end_date_time_in.setText(intent.getExtras().getString("end_date_string"));
+        ratingBar.setRating(intent.getExtras().getFloat("rating_float"));
     }
 
     public void closeAddSleep(View view) {

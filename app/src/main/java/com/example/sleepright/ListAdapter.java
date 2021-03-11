@@ -118,7 +118,13 @@ public class ListAdapter extends RecyclerView.Adapter {
             // TODO: onclick should go to fragment that allows you to edit the rating. Passes data from the itemView to the fragment.
             Intent intent = new Intent (v.getContext(), ActivityChangeSleep.class);
             int pos = getAdapterPosition();
+            SleepSession sessionAtPos = sessions.get(pos);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d, h:mm a");
+
             intent.putExtra("ADAPTER_POSITION", pos);
+            intent.putExtra("start_date_string",simpleDateFormat.format(sessionAtPos.getStartTime()));
+            intent.putExtra("end_date_string",simpleDateFormat.format(sessionAtPos.getEndTime()));
+            intent.putExtra("rating_float",rating_bar.getRating());
             v.getContext().startActivity(intent);
         }
     }
