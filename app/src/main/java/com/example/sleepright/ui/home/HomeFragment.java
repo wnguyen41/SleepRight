@@ -1,7 +1,13 @@
 package com.example.sleepright.ui.home;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +17,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,7 +27,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sleepright.ListAdapter;
+import com.example.sleepright.MainActivity;
 import com.example.sleepright.R;
+import com.example.sleepright.SleepReceiver;
 import com.example.sleepright.SleepSession;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,7 +50,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class HomeFragment extends Fragment {
-
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private HomeViewModel homeViewModel;
     private TextView recommendedSleep;
 
@@ -167,10 +177,43 @@ public class HomeFragment extends Fragment {
                     // add recommendation to SharedPreferences
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                     SharedPreferences.Editor prefsEditor = prefs.edit();
+
+                    // setting alarm one hour before recommendation
+                    Calendar updateTime = Calendar.getInstance();
+                    updateTime.set(Calendar.HOUR_OF_DAY, startHour-1);
+                    updateTime.set(Calendar.MINUTE, 0);
+                    updateTime.set(Calendar.SECOND, 0);
+                    if(prefs.getBoolean("notificationPreference", false) && !prefs.getBoolean("firstTime", false)) {
+                        Log.i(LOG_TAG, "First time: false");
+                        prefsEditor.putBoolean("firstTime", true);
+                        prefsEditor.apply();
+                        prefsEditor.commit();
+                        Intent intent = new Intent(getContext(), SleepReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                        //                        Toast.makeText(getContext(), updateTime.getTimeInMillis() + " " + startHour, Toast.LENGTH_LONG).show();
+                    }
+                    else if (prefs.getBoolean("notificationPreference", false) && prefs.getInt("recommendationStartHour", 0) != startHour){
+                        Log.i(LOG_TAG, "Updated. First time: false");
+                        // cancel previous notification
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+                        notificationManager.cancelAll();
+                        Intent intent = new Intent(getContext(), SleepReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+
+                        // cancel other alarm
+                        alarmManager.cancel(pendingIntent);
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                    }
                     prefsEditor.putString("recommendation", recommendation);
                     prefsEditor.putInt("recommendationStartHour", startHour);
                     prefsEditor.apply();
                     prefsEditor.commit();
+                    Log.i(LOG_TAG, "Update time: " + updateTime.getTime());
+                    Log.i(LOG_TAG, "Recommend start time: " + prefs.getInt("recommendationStartHour", 0));
+
                 }
                 else
                 {
