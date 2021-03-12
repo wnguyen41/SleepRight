@@ -44,26 +44,26 @@
             app:defaultValue="false"/>
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:iconSpaceReserved="false"
-        app:title="@string/integration_header">
-        <CheckBoxPreference
-            app:iconSpaceReserved="false"
-            app:key="Wearables"
-            app:title="@string/wearables_title" />
+<!--    <PreferenceCategory-->
+<!--        app:iconSpaceReserved="false"-->
+<!--        app:title="@string/integration_header">-->
+<!--        <CheckBoxPreference-->
+<!--            app:iconSpaceReserved="false"-->
+<!--            app:key="Wearables"-->
+<!--            app:title="@string/wearables_title" />-->
 
-        <!--        <CheckBoxPreference-->
-        <!--            app:key="google_fit"-->
-        <!--            app:title="@string/google_fit_title"-->
-        <!--            android:summary="Import your Google Fit data."-->
-        <!--            app:iconSpaceReserved="false"/>-->
+<!--                <CheckBoxPreference-->
+<!--                    app:key="google_fit"-->
+<!--                    app:title="@string/google_fit_title"-->
+<!--                    android:summary="Import your Google Fit data."-->
+<!--                    app:iconSpaceReserved="false"/>-->
 
-        <!--        <CheckBoxPreference-->
-        <!--            android:summary="SleepRight will recommend you the best time to sleep based on your events for the next day and your ideal sleep income!"-->
-        <!--            app:key="google_calendar"-->
-        <!--            app:title="@string/google_calendar_title"-->
-        <!--            app:iconSpaceReserved="false"/>-->
+<!--                <CheckBoxPreference-->
+<!--                    android:summary="SleepRight will recommend you the best time to sleep based on your events for the next day and your ideal sleep income!"-->
+<!--                    app:key="google_calendar"-->
+<!--                    app:title="@string/google_calendar_title"-->
+<!--                    app:iconSpaceReserved="false"/>-->
 
-    </PreferenceCategory>
+<!--    </PreferenceCategory>-->
 
 </PreferenceScreen>
