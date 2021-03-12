@@ -202,10 +202,20 @@ public class HomeFragment extends Fragment {
                         Intent intent = new Intent(getContext(), SleepReceiver.class);
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                         AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-
                         // cancel other alarm
                         alarmManager.cancel(pendingIntent);
+                        // set new alarm
                         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                    }
+                    else if (!prefs.getBoolean("notificationPreference", false)) {
+                        // cancel previous notification
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+                        notificationManager.cancelAll();
+                        // cancel other alarm
+                        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                        Intent intent = new Intent(getContext(), SleepReceiver.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        alarmManager.cancel(pendingIntent);
                     }
                     prefsEditor.putString("recommendation", recommendation);
                     prefsEditor.putInt("recommendationStartHour", startHour);
